@@ -1,0 +1,13 @@
+Practical Astronomy with Your Calculator, Third Edition, page 105
+Elements of the planetary orbits
+epoch 1990-01-00
+P - Planet,Tp - Period (tropical years),ɛ - Longitude at epoch (degrees),ω - Longitude of the perihelion (degrees),e - Eccentricity of the orbit,a - Semi-major axis of the orbit,i - Inclination of the orbit (degrees),Ω - Longitude of the ascending node (degrees),Θ0 - Angular diameter at 1 AU,V0 - visual magnitude at 1 AU
+Mercury,0.240852,60.750646,77.299833,0.205633,0.387099,7.004540,48.212740,6.74,-0.42
+Venus,0.615211,88.455855,131.430236,0.006778,0.723332,3.394535,76.589820,16.92,-4.40
+Earth,1.00004,99.403308,102.768413,0.016713,1.00000,1.849736,49.480308,9.36,1.52
+Mars,1.880932,240.739474,335.874939,0.093396,1.523688,1.303613,100.353142,196.74,-9.40
+Jupiter,11.863075,90.638185,14.170747,0.048482,5.202561,2.488980,113.576139,165.60,-8.88
+Saturn,29.471362,287.690033,92.861407,0.055581,9.554747,0.773059,73.926961,65.80,-7.19
+Uranus,84.039492,271.063148,172.884833,0.046321,19.21814,1.770646,131.670599,62.20,-6.87
+Neptune,164.79246,282.349556,48.009758,0.009003,30.109570,17.1420,110.144,8.20,-1.00
+Pluto*,246.77027,221.4127,224.133,0.24624,39.3414,,0,,
