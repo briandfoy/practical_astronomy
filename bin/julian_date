@@ -1,0 +1,58 @@
+#!perl
+use v5.10;
+
+use File::FindLib qw(lib);
+
+use PracticalAstronomy::Util;
+
+my( $year, $month, $day, $hour ) = @ARGV;
+
+if( @ARGV == 0 ) {
+	( $year, $month, $day, $hour ) = (gmtime)[5,4,3,2];
+	$year += 1900;
+	$month += 1;
+	}
+
+$hour  //=    0;
+$day   //=    0;
+$month //=    1;
+
+say sprintf '%.2f', to_julian( $year, $month, $day, $hour );
+
+=head1 NAME
+
+julian_date -
+
+=head1 SYNOPSIS
+
+	% julian_date [ YEAR, [, MONTH [, DAY [, HOUR24] ] ]
+
+	% julian_date
+
+=head1 DESCRIPTION
+
+Convert the Gregorian date (in UTC) to the Julian date (days since the
+start of the epoch).
+
+With no arguments, the date defaults to the current date and time.
+
+=over
+
+=item * year
+
+For years before 1 AD, (such as 4713 BC), negate the number and add
+one (so, -4712 BC).
+
+With no year argument (i.e. no arguments, everything defaults to
+the current date).
+
+=item * month - defaults to 1
+
+=item * day - defaults to 0
+
+=item * hour - defaults to 0
+
+=back
+
+
+=cut
