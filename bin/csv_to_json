@@ -3,23 +3,8 @@
 use v5.20;
 use open qw(:std :utf8);
 
+use File::FindLib qw(lib);
 use Text::CSV_XS;
-
-package Mojo::File::Role::SlurpJSON {
-	use Mojo::Base -role, -signatures;
-	use Mojo::JSON qw(decode_json);
-
-	sub slurp_json ( $self ) { decode_json( $self->slurp ) }
-	}
-
-package Mojo::File::Role::SpurtJSON {
-	use Mojo::Base -role, -signatures;
-	use Mojo::JSON qw(encode_json);
-
-	sub spurt_json ( $self, $ds ) {
-		$self->spurt( encode_json( $ds ) )
-		}
-	}
 
 use Mojo::File;
 my $MojoFile = Mojo::File->with_roles(qw(
