@@ -1,0 +1,10 @@
+#!perl
+use v5.10;
+
+use File::FindLib qw(lib);
+
+use PracticalAstronomy::Planets;
+
+my $planets = PracticalAstronomy::PlanetData->new_from_file( $ARGV[0] );
+
+say join "\n", $planets->names;
