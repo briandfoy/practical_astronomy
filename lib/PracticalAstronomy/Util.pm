@@ -10,7 +10,7 @@ use Carp     qw(croak);
 use Exporter qw(import);
 
 
-our @EXPORT = qw( to_julian elapsed_days );
+our @EXPORT = qw( to_julian elapsed_days π );
 
 =head1 NAME
 
@@ -68,26 +68,6 @@ See page 9.
 =cut
 
 sub elapsed_days ( $j1, $j2 ) { $j2 - $j1 }
-
-=back
-
-=head2
-
-=over 4
-
-=item * mean_anomoly
-
-=cut
-
-sub mean_anomoly ( %args ) {
-
-	#my $M = ( 360 / 365.242191 ) * $D/$Tp + $ɛ + $ω
-	}
-
-sub true_anomoly ( %args ) {
-	my $M = &mean_anomoly;
-	#$M + (360/π) * $e * sin($M)
-	}
 
 =back
 
