@@ -31,9 +31,29 @@ sub _data_for ( $self, $name ) {
 
 sub data_for ( $self, $name ) {
 	state $k = $self->planet_name_key;
+
 	my $planet = $self->_data_for( $name );
-	$planet->{date} = $self->_meta->{epoch};
+
+	$planet->{date}   = $self->_meta->{epoch};
+	$planet->{symbol} = $self->symbol_for( $name );
+
 	$planet;
+	}
+
+sub symbol_for ( $self, $name ) {
+	state %symbols = qw(
+		mercury ☿
+		venus   ♀
+		earth   ♁
+		mars    ♂
+		saturn  ♄
+		jupiter ♃
+		uranus  ♅
+		neptune ♆
+		pluto   ♇
+		);
+
+	$symbols{ lc $name };
 	}
 
 1;
