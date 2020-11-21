@@ -1,8 +1,10 @@
 use utf8;
+use v5.26;
 
 package PracticalAstronomy::Planet;
 
 use PracticalAstronomy::Util;
+use experimental qw(signatures);
 
 sub new ( $class, $data ) { bless $_[1], $_[0] }
 
@@ -14,7 +16,7 @@ sub days_since_epoch ( $self, $date ) {
 
 sub orbital_period ( $self )  { $self->{Tp} }
 
-sub eccentricity ( $self ) { $self->{} }
+sub eccentricity ( $self ) { $self->{ɛ} }
 
 sub long_at_perihelion ( $self ) { $self->{ω} }
 
