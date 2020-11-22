@@ -1,4 +1,4 @@
-package PracticalAstronomy::PlanetData;
+package PracticalAstronomy::PlanetsData;
 use v5.26;
 use experimental qw(signatures);
 
