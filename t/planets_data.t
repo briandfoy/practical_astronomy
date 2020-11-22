@@ -19,6 +19,22 @@ subtest names => sub {
 	can_ok( $class, $method );
 	my $planets = $class->new_from_file( $data_file );
 	isa_ok( $planets, $class );
+
+	my @names = $planets->$method();
+	is( scalar @names, 8, 'There are eight planets' );
+	};
+
+subtest data_for => sub {
+	my $method = 'data_for';
+	my $planets = $class->new_from_file( $data_file );
+	isa_ok( $planets, $class );
+	can_ok( $planets, $method );
+
+	my $earth = $planets->$method( 'earth' );
+	isa_ok( $earth, ref {}, 'Planet data is a hash ref' );
+
+	my $no_planet = $planets->$method( 'Zylon' );
+	ok( ! defined $no_planet, 'Non-existent planet returns undef' );
 	};
 
 done_testing();
