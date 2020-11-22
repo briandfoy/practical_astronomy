@@ -1,3 +1,4 @@
+use utf8;
 use Test::More 1;
 
 use File::FindLib qw(lib);
