@@ -6,3 +6,7 @@ json:
 
 test:
 	prove $(< t/test_manifest)
+
+cover:
+	cover -delete
+	cover -test
