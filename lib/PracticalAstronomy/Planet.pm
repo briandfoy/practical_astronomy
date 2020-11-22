@@ -147,7 +147,7 @@ Returns the true anomaly, ν
 =cut
 
 sub true_anomaly ( $self ) {
-	my $M = $self->mean_anomoly;
+	my $M = $self->mean_anomaly;
 	$M + (360/π) * $self->eccentricity * sin($M);
 	}
 
