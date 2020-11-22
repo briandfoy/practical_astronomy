@@ -32,6 +32,10 @@ subtest data_for => sub {
 
 	my $earth = $planets->$method( 'earth' );
 	isa_ok( $earth, ref {}, 'Planet data is a hash ref' );
+	$earth = $planets->$method( 'Earth' );
+	isa_ok( $earth, ref {}, 'Planet data is a hash ref' );
+	$earth = $planets->$method( 'EARTH' );
+	isa_ok( $earth, ref {}, 'Planet data is a hash ref' );
 
 	my $no_planet = $planets->$method( 'Zylon' );
 	ok( ! defined $no_planet, 'Non-existent planet returns undef' );
