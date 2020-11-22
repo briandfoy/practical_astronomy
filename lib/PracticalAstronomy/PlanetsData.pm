@@ -18,7 +18,17 @@ use PracticalAstronomy::Planet;
 
 =head1 NAME
 
+PracticalAstronomy::PlanetsData - handle orbital data for the planets
+
 =head1 SYNOPSIS
+
+	use PracticalAstronomy::PlanetsData;
+
+	my $planets = PracticalAstronomy::PlanetsData->new_from_file(
+		'data/planetary_data_2010.json'
+		);
+
+	my $earth = $planets->data_for( 'Earth' );
 
 =head1 DESCRIPTION
 
