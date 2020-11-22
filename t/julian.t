@@ -39,4 +39,28 @@ subtest elapsed_days => sub {
 	is( elapsed_days( $j2, $j1 ), -1778 );
 	};
 
+subtest bad_month => sub {
+	my $rc = eval { to_julian( 2009, 13, 19, 18 ) };
+	my $at = $@;
+	ok( ! defined $rc, 'eval returns undef' );
+	ok( defined $at, "There's something in \$@" );
+	like( $at, qr/bad month/i );
+	};
+
+subtest bad_day => sub {
+	my $rc = eval { to_julian( 2009, 6, 39, 23 ) };
+	my $at = $@;
+	ok( ! defined $rc, 'eval returns undef' );
+	ok( defined $at, "There's something in \$@" );
+	like( $at, qr/bad day/i );
+	};
+
+subtest bad_hour => sub {
+	my $rc = eval { to_julian( 2009, 6, 19, 29 ) };
+	my $at = $@;
+	ok( ! defined $rc, 'eval returns undef' );
+	ok( defined $at, "There's something in \$@" );
+	like( $at, qr/bad hour/i );
+	};
+
 done_testing();

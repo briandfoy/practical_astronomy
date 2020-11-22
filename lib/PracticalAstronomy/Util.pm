@@ -9,8 +9,9 @@ use experimental qw(signatures);
 use Carp     qw(croak);
 use Exporter qw(import);
 
-
 our @EXPORT = qw( to_julian elapsed_days π );
+
+=encoding utf8
 
 =head1 NAME
 
@@ -33,7 +34,9 @@ See page 9.
 =cut
 
 sub to_julian ( $y, $m, $d, $hour = 0 ) {
-	croak( "Bad month <$m>" ) unless $m =~ /\A(?:1[012])|[1-9]\z/;
+	croak( "Bad month <$m>"   ) unless $m    =~ /\A((1[012])|0?[1-9])\z/n;
+	croak( "Bad day <$d>"     ) unless $d    =~ /\A(3[01]|[012]?[0-9])\z/n;
+	croak( "Bad hour <$hour>" ) unless $hour =~ /\A(2[0-3]|[01]?[0-9])\z/n;
 	$d += $hour / 24;
 
 	my( $y_, $m_ ) = do {
@@ -80,6 +83,8 @@ sub elapsed_days ( $j1, $j2 ) { $j2 - $j1 }
 =cut
 
 sub π () { 3.1415927 }
+
+=back
 
 =cut
 
