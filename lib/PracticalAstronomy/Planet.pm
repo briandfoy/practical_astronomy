@@ -151,7 +151,39 @@ sub true_anomaly ( $self ) {
 	$M + (360/π) * $self->eccentricity * sin($M);
 	}
 
-=back
+=item * heliocentric_anomaly
+
+Returns the heliocentric anomaly, l
+
+=cut
+
+sub heliocentric_anomaly ( $self ) {
+	$self->true_anomaly + $self->long_at_perihelion
+	}
+
+=item * radius_vector
+
+Returns the radius vector, r
+
+=cut
+
+sub radius_vector ( $self ) {
+	( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
+		/ # /
+	( 1 +  $self->eccentricity * cos( $self->true_anomaly ) )
+	}
+
+=item * heliocentric_latitude
+
+Returns the heliocentric latitude, ψ
+
+=cut
+
+sub heliocentric_latitude ( $self ) {
+	arcsin(
+		sin( $self->heliocentric_anomaly - $self->long_of_ascending_node ) * sin( $self->inclination )
+		);
+	}
 
 =cut
 
