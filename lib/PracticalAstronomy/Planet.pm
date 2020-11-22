@@ -69,39 +69,39 @@ Returns the epoch for the data, in YYYY-MM-DD
 
 =item * orbital_period
 
-Returns the orbital period in tropical years.
+Returns the orbital period in tropical years, Tp
 
 =item * eccentricity
 
-Returns the eccentricity of the orbit.
+Returns the eccentricity of the orbit, e
 
 =item * long_at_perihelion
 
-Returns the longitude at perihelion, in degrees.
+Returns the longitude at perihelion, in degrees, ω
 
 =item * long_at_epoch
 
-Returns the longitude at the epoch, in degrees.
+Returns the longitude at the epoch, in degrees, ε
 
 =item * orbital_inclination
 
-Returns the orbital inclination, in degrees
+Returns the orbital inclination, in degrees, i
 
 =item * long_of_ascending_node
 
-Returns the longitude if the ascending node, in degrees
+Returns the longitude if the ascending node, in degrees, 􏰀Ω
 
 =item * semi_major_axis
 
-Returns the semi major axis,
+Returns the semi major axis, a
 
 =item * angular_diameter_1au
 
-Returns the angular diameter at 1 AU, in degrees
+Returns the angular diameter at 1 AU, in degrees, Θ0
 
 =item * visual_magnitude_1au
 
-Returns the visual magnitude at 1 AU.
+Returns the visual magnitude at 1 AU, V0
 
 =item * symbol
 
@@ -128,7 +128,7 @@ sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
 =item * mean_anomaly
 
-Returns the mean anomaly
+Returns the mean anomaly, M
 
 =cut
 
@@ -142,7 +142,7 @@ sub mean_anomaly ( $self ) {
 
 =item * true_anomaly
 
-Returns the true anomaly
+Returns the true anomaly, ν
 
 =cut
 
