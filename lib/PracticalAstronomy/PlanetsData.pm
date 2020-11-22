@@ -26,13 +26,15 @@ sub names ( $self ) {
 
 sub _data_for ( $self, $name ) {
 	state $k = $self->planet_name_key;
-	my $planet = grep { fc($_->{$k}) eq fc($name) } $self->_data->@*;
+	my( $planet ) = grep { fc($_->{$k}) eq fc($name) } $self->_data->@*;
+	$planet;
 	}
 
 sub data_for ( $self, $name ) {
 	state $k = $self->planet_name_key;
 
 	my $planet = $self->_data_for( $name );
+	return unless ref $planet;
 
 	$planet->{date}   = $self->_meta->{epoch};
 	$planet->{symbol} = $self->symbol_for( $name );
