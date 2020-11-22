@@ -91,6 +91,10 @@ Returns the orbital inclination, in degrees
 
 Returns the longitude if the ascending node, in degrees
 
+=item * semi_major_axis
+
+Returns the semi major axis,
+
 =item * angular_diameter_1au
 
 Returns the angular diameter at 1 AU, in degrees
@@ -115,6 +119,7 @@ sub long_at_perihelion     { $_[0]->{ $K->_longitude_perihelion_key     } }
 sub long_at_epoch          { $_[0]->{ $K->_longitude_epoch_key          } }
 sub orbital_inclination    { $_[0]->{ $K->_inclination_key              } }
 sub long_of_ascending_node { $_[0]->{ $K->_longitude_ascending_node_key } }
+sub semi_major_axis        { $_[0]->{ $K->_semi_major_axis_key          } }
 sub angular_diameter_1au   { $_[0]->{ $K->_angular_diameter_key         } }
 sub visual_magnitude_1au   { $_[0]->{ $K->_visual_magnitude_key         } }
 

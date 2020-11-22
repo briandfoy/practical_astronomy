@@ -21,6 +21,7 @@ my @methods   = qw(
 	long_at_epoch
 	orbital_inclination
 	long_of_ascending_node
+	semi_major_axis
 	angular_diameter_1au
 	visual_magnitude_1au
 	mean_anomaly
@@ -51,6 +52,7 @@ subtest methods => sub {
 	is( $planet->long_at_epoch,          '272.30044', 'long_at_epoch for Venus'          );
 	is( $planet->orbital_inclination,    '3.3947',    'orbital_inclination for Venus'    );
 	is( $planet->long_of_ascending_node, '76.769',    'long_of_ascending_node for Venus' );
+	is( $planet->semi_major_axis,        '0.723329',  'semi_major_axis for Venus'        );
 	is( $planet->angular_diameter_1au,   '16.92',     'angular_diameter_1au for Venus'   );
 	is( $planet->visual_magnitude_1au,   '-4.40',     'visual_magnitude_1au for Venus'   );
 	};
