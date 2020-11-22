@@ -47,6 +47,7 @@ subtest methods => sub {
 		}
 
 	is( $planet->name,                   'Venus',     'name for Venus'                   );
+	is( $planet->symbol,                 '♀',         'symbol for Venus'                 );
 	is( $planet->orbital_period,         '0.615207',  'orbital_period (Tp) for Venus'    );
 	is( $planet->eccentricity,           '0.006812',  'eccentricity for Venus'           );
 	is( $planet->long_at_perihelion,     '131.54',    'long_at_perihelion for Venus'     );
