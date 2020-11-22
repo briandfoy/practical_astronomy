@@ -43,6 +43,16 @@ subtest methods => sub {
 		next unless $method eq 'days_since_epoch';
 		ok( defined $planet->$method() );
 		}
+
+	is( $planet->name,                   'Venus',     'name for Venus'                   );
+	is( $planet->orbital_period,         '0.615207',  'orbital_period (Tp) for Venus'    );
+	is( $planet->eccentricity,           '0.006812',  'eccentricity for Venus'           );
+	is( $planet->long_at_perihelion,     '131.54',    'long_at_perihelion for Venus'     );
+	is( $planet->long_at_epoch,          '272.30044', 'long_at_epoch for Venus'          );
+	is( $planet->orbital_inclination,    '3.3947',    'orbital_inclination for Venus'    );
+	is( $planet->long_of_ascending_node, '76.769',    'long_of_ascending_node for Venus' );
+	is( $planet->angular_diameter_1au,   '16.92',     'angular_diameter_1au for Venus'   );
+	is( $planet->visual_magnitude_1au,   '-4.40',     'visual_magnitude_1au for Venus'   );
 	};
 
 done_testing();

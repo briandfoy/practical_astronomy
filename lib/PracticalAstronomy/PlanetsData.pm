@@ -36,13 +36,25 @@ sub new_from_file ( $class, $file ) {
 sub _meta ( $self ) { $self->{meta} }
 sub _data ( $self ) { $self->{data} }
 
+sub _planet_name_key              { 'P'  }
+sub _orbital_period_key           { 'Tp' }
+sub _eccentricity_key             { 'e'  }
+sub _inclination_key              { 'i'  }
+sub _longitude_epoch_key          { 'ɛ'  }
+sub _longitude_perihelion_key     { 'ω'  }
+sub _longitude_ascending_node_key { 'Ω'  }
+sub _semi_major_axis_key          { 'a'  }
+sub _visual_magnitude_key         { 'V0' }
+sub _angular_diameter_key         { 'Θ0' }
+sub _epoch_key                    { 'epoch' }
+sub _symbol_key                   { 'symbol' }
+
 =item * names
 
 Returns the names of the planets as a list.
 
 =cut
 
-sub _planet_name_key ( $self ) { 'P' }
 sub names ( $self ) {
 	state $k = $self->_planet_name_key;
 	map { $_->{$k} } $self->_data->@*;
@@ -67,8 +79,8 @@ sub data_for ( $self, $name ) {
 	my $planet = $self->_data_for( $name );
 	return unless ref $planet;
 
-	$planet->{epoch}  = $self->_meta->{epoch};
-	$planet->{symbol} = $self->symbol_for( $name );
+	$planet->{ $self->_epoch_key  } = $self->_meta->{epoch};
+	$planet->{ $self->_symbol_key } = $self->symbol_for( $name );
 
 	PracticalAstronomy::Planet->new( $planet );
 	}

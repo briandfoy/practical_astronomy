@@ -59,9 +59,13 @@ sub days_since_epoch ( $self, $date=undef ) {
 		- to_julian( split /-/, $self->epoch );
 	}
 
+=item * name
+
+Returns the name of the planet
+
 =item * epoch
 
-The epoch for the data, in YYYY-MM-DD
+Returns the epoch for the data, in YYYY-MM-DD
 
 =item * orbital_period
 
@@ -101,17 +105,21 @@ Returns the astrological symbol for the planet.
 
 =cut
 
-sub orbital_period         { $_[0]->{Tp} }
-sub eccentricity           { $_[0]->{e}  }
-sub long_at_perihelion     { $_[0]->{ω}  }
-sub long_at_epoch          { $_[0]->{ɛ}  }
-sub orbital_inclination    { $_[0]->{i}  }
-sub long_of_ascending_node { $_[0]->{Ω}  }
-sub angular_diameter_1au   { $_[0]->{Θ0} }
-sub visual_magnitude_1au   { $_[0]->{V0} }
+my $K = 'PracticalAstronomy::PlanetsData';
+eval "require $K";
 
-sub epoch                  { $_[0]->{epoch}  }
-sub symbol                 { $_[0]->{symbol} }
+sub name                   { $_[0]->{ $K->_planet_name_key              } }
+sub orbital_period         { $_[0]->{ $K->_orbital_period_key           } }
+sub eccentricity           { $_[0]->{ $K->_eccentricity_key             } }
+sub long_at_perihelion     { $_[0]->{ $K->_longitude_perihelion_key     } }
+sub long_at_epoch          { $_[0]->{ $K->_longitude_epoch_key          } }
+sub orbital_inclination    { $_[0]->{ $K->_inclination_key              } }
+sub long_of_ascending_node { $_[0]->{ $K->_longitude_ascending_node_key } }
+sub angular_diameter_1au   { $_[0]->{ $K->_angular_diameter_key         } }
+sub visual_magnitude_1au   { $_[0]->{ $K->_visual_magnitude_key         } }
+
+sub epoch                  { $_[0]->{ $K->_epoch_key                    } }
+sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
 =item * mean_anomaly
 
@@ -122,7 +130,7 @@ Returns the mean anomaly
 sub mean_anomaly ( $self ) {
 	my $M =
 		( 360 / 365.242191 )
-		* ( $self->days_since_epoch / $self->period )
+		* ( $self->days_since_epoch / $self->orbital_period )
 		+ $self->eccentricity
 		+ $self->long_at_perihelion
 	}
