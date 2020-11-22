@@ -2,17 +2,13 @@ use Test::More 1;
 
 use File::FindLib qw(lib);
 
-my $data_file;
-my $class;
+my $class = 'PracticalAstronomy::PlanetsData';
+my $data_file = 'data/planetary_data_2010.json';
 
-BEGIN {
-$class = 'PracticalAstronomy::PlanetsData';
-$data_file = 'data/planetary_data_2010.json';
 subtest load => sub {
 	use_ok( $class );
 	ok( -e $data_file, "Data file <$file> exists" );
 	};
-}
 
 subtest names => sub {
 	my $method = 'names';
