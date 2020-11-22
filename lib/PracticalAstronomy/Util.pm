@@ -9,7 +9,10 @@ use experimental qw(signatures);
 use Carp     qw(croak);
 use Exporter qw(import);
 
-our @EXPORT = qw( to_julian elapsed_days π );
+our @EXPORT = qw(
+	to_julian elapsed_days π
+	cos_d sin_d arcsin_d arccos_d
+	);
 
 =encoding utf8
 
@@ -71,6 +74,38 @@ See page 9.
 =cut
 
 sub elapsed_days ( $j1, $j2 ) { $j2 - $j1 }
+
+=back
+
+=head2 Trig functions for degrees
+
+=over 4
+
+=item * cos_d
+
+Return the cosine, given the angle in degrees.
+
+=item * sin_d
+
+Return the sine, given the angle in degrees.
+
+=item * arccos_d
+
+Return the arccosine, given the angle in degrees.
+
+=item * arcsin_d
+
+Return the arcsine, given the angle in degrees.
+
+=cut
+
+use Math::Trig qw(deg2rad rad2deg acos asin);
+
+sub cos_d    ( $d ) {  cos( deg2rad($d) ) }
+sub sin_d    ( $d ) {  sin( deg2rad($d) ) }
+
+sub arccos_d ( $x ) { rad2deg( acos($x) ) }
+sub arcsin_d ( $x ) { rad2deg( asin($x) ) }
 
 =back
 

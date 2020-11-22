@@ -1,4 +1,5 @@
 t/util.t
+t/trig.t
 t/julian.t
 t/planets_data.t
 t/planet.t
