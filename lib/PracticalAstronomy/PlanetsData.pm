@@ -11,7 +11,7 @@ use Mojo::Util qw(dumper);
 
 sub new ( $class, $data ) { bless $data, $class }
 
-sub new_from_file( $class, $file ) {
+sub new_from_file ( $class, $file ) {
 	$class->new( $MojoFile->new( $file )->slurp_json );
 	}
 
