@@ -1,5 +1,8 @@
+use utf8;
+
 package PracticalAstronomy::PlanetsData;
 use v5.26;
+
 use experimental qw(signatures);
 
 use Mojo::File;
