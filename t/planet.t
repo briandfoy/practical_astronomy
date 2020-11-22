@@ -57,6 +57,9 @@ subtest methods => sub {
 	is( $planet->semi_major_axis,        '0.723329',  'semi_major_axis for Venus'        );
 	is( $planet->angular_diameter_1au,   '16.92',     'angular_diameter_1au for Venus'   );
 	is( $planet->visual_magnitude_1au,   '-4.40',     'visual_magnitude_1au for Venus'   );
+
+	is( $planet->mean_anomaly, '', 'mean_anomaly for Venus' );
+	is( $planet->true_anomaly, '', 'true_anomaly for Venus' );
 	};
 
 done_testing();
