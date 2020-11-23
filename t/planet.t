@@ -29,11 +29,11 @@ my @methods   = qw(
 	true_anomaly
 	);
 
-subtest load => sub {
+subtest load_planet => sub {
 	my $planet = $planets->data_for( 'mercury' );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
-	};
+	} or BAIL_OUT();
 
 use Mojo::Util qw(dumper);
 subtest methods => sub {
