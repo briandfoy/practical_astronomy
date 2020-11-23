@@ -4,6 +4,7 @@ use File::FindLib qw(lib);
 
 package PracticalAstronomy::Planet;
 
+use Carp qw(croak carp);
 use PracticalAstronomy::JulianDate;
 use PracticalAstronomy::Util;
 use experimental qw(signatures);
@@ -42,21 +43,42 @@ The hash keys are:
 
 sub new { bless $_[1], $_[0] }
 
+=item * clone_with_date( $self, $y, $m, $d, $h = 0 )
+
+Copy the object and add an observation date.
+
+=cut
+
+use Storable qw(dclone);
+sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
+	my $hash = dclone $self;
+
+	bless $hash, ref $self;
+	delete $hash->{calc_date};
+
+	$hash->{calc_date}{year}  = $y;
+	$hash->{calc_date}{month} = $m;
+	$hash->{calc_date}{date}  = $d;
+	$hash->{calc_date}{hour}  = $h;
+
+	$hash->{calc_date}{elapsed} = $hash->epoch->elapsed_to( $y, $m, $d, $h );
+
+	$hash;
+	}
+
+
 =item * days_since_epoch
 
 Returns the number of days since the epoch for this data.
 
 =cut
 
-sub days_since_epoch ( $self, $date=undef ) {
-	unless( defined $date ) {
-		my( $y, $m, $d ) = (gmtime)[5,4,3];
-		$y += 1900;
-		$m += 1;
-		$date = sprintf '%4d-%02d-%02d', $y, $m, $d;
+sub days_since_epoch ( $self ) {
+	unless( exists $self->{calc_date} ) {
+		carp "Date not set for planet observation. Use clone_with_date() first.";
+		return;
 		}
-
-	to_julian( split /-/, $date ) - $self->epoch->julian;
+	$self->{calc_date}{elapsed};
 	}
 
 =item * name
@@ -126,29 +148,70 @@ sub visual_magnitude_1au   { $_[0]->{ $K->_visual_magnitude_key         } }
 sub epoch                  { $_[0]->{ $K->_epoch_key                    } }
 sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
+
+sub _shift_into_360 ( $n ) {
+	while(1) { last if $n >=   0; $n += 360 }
+	while(1) { last if $n <= 360; $n -= 360 }
+	$n;
+	}
+
+=item * Np
+
+Returns
+
+=cut
+
+sub Np ( $self ) {
+	unless( exists $self->{calc_date} ) {
+		carp "Date not set for planet observation. Use clone_with_date() first.";
+		return;
+		}
+
+	my $Np = ( 360 / days_in_year ) * ( $self->days_since_epoch / $self->orbital_period );
+	while(1) { last if $Np >=   0; $Np += 360 }
+	while(1) { last if $Np <= 360; $Np -= 360 }
+
+	_shift_into_360( $Np )
+	}
+
 =item * mean_anomaly
 
-Returns the mean anomaly, M
+Returns the mean anomaly, M, in degrees
 
 =cut
 
 sub mean_anomaly ( $self ) {
+	unless( exists $self->{calc_date} ) {
+		carp "Date not set for planet observation. Use clone_with_date() first.";
+		return;
+		}
+
 	my $M =
-		( 360 / days_in_year )
-		* ( $self->days_since_epoch / $self->orbital_period )
-		+ $self->eccentricity
-		+ $self->long_at_perihelion
+		$self->Np
+		+ $self->long_at_epoch
+		- $self->long_at_perihelion;
+
+	$M;
 	}
 
 =item * true_anomaly
 
-Returns the true anomaly, ν
+Returns the true anomaly, ν, in degrees
 
 =cut
 
 sub true_anomaly ( $self ) {
+	unless( exists $self->{calc_date} ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
+
 	my $M = $self->mean_anomaly;
-	$M + (360/π) * $self->eccentricity * sin($M);
+	say STDERR "Mp $M";
+	say STDERR "e ", $self->eccentricity;
+	my $ν = $M + (360/π) * $self->eccentricity * sin_d($M);
+	say STDERR "ν ", $ν;
+	_shift_into_360( $ν );
 	}
 
 =item * heliocentric_anomaly
