@@ -117,7 +117,7 @@ sub arcsin_d ( $x ) { rad2deg( asin($x) ) }
 
 =cut
 
-sub π () { 3.1415927 }
+sub π () { '3.1415927' }
 
 =back
 
