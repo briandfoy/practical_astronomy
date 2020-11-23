@@ -124,4 +124,5 @@ sub symbol_for ( $self, $name ) {
 =back
 
 =cut
+
 1;
