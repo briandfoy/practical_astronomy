@@ -8,7 +8,7 @@ my $data_file = 'data/planetary_data_2010.json';
 subtest load => sub {
 	use_ok( $class );
 	ok( -e $data_file, "Data file <$file> exists" );
-	};
+	} or BAIL_OUT();
 
 subtest names => sub {
 	my $method = 'names';

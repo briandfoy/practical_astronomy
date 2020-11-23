@@ -2,11 +2,12 @@ use Test::More 1;
 
 use File::FindLib qw(lib);
 
+my $class;
 BEGIN {
-my $class = 'PracticalAstronomy::Util';
+$class = 'PracticalAstronomy::JulianDate';
 subtest load => sub {
 	use_ok( $class );
-	};
+	} or BAIL_OUT();
 }
 
 subtest basic_date => sub {

@@ -6,8 +6,10 @@ use Test::More 1;
 
 my $class;
 BEGIN {
-	my $class = 'PracticalAstronomy::Util';
-	use_ok( $class );
+	subtest sanity => sub {
+		$class = 'PracticalAstronomy::Util';
+		use_ok( $class );
+		} or BAIL_OUT();
 	}
 
 subtest constants => sub {

@@ -11,7 +11,7 @@ subtest planets_data => sub {
 	use_ok( $class );
 	ok( -e $data_file, "Data file <$file> exists" );
 	$planets = $class->new_from_file( $data_file );
-	};
+	} or BAIL_OUT();
 
 my $class     = 'PracticalAstronomy::Planet';
 my @methods   = qw(
