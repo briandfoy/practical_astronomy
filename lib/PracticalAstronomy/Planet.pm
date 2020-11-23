@@ -55,15 +55,36 @@ sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
 
 	bless $hash, ref $self;
 	delete $hash->{calc_date};
+	delete $hash->{computed};
 
-	$hash->{calc_date}{year}  = $y;
-	$hash->{calc_date}{month} = $m;
-	$hash->{calc_date}{date}  = $d;
-	$hash->{calc_date}{hour}  = $h;
+	$hash->set_date( $y, $m, $d, $h = 0 );
 
 	$hash->{calc_date}{elapsed} = $hash->epoch->elapsed_to( $y, $m, $d, $h );
 
 	$hash;
+	}
+
+=item * set_date( $y, $m, $d, $h = 0 )
+
+Set the date for the observation. The computed values use this date.
+
+=item * date_is_set()
+
+Returns true if the object has had the date set, and false otherwise.
+
+=cut
+
+sub set_date ( $self, $y, $m, $d, $h = 0 ) {
+	$self->{calc_date}{year}  = $y;
+	$self->{calc_date}{month} = $m;
+	$self->{calc_date}{date}  = $d;
+	$self->{calc_date}{hour}  = $h;
+
+	$self->{calc_date}{elapsed} = $self->epoch->elapsed_to( $y, $m, $d, $h );
+	}
+
+sub date_is_set ( $self ) {
+	return exists $self->{calc_date}{year}
 	}
 
 =item * distance_to( PLANET )
@@ -96,7 +117,7 @@ Returns the number of days since the epoch for this data.
 =cut
 
 sub days_since_epoch ( $self ) {
-	unless( exists $self->{calc_date} ) {
+	unless( $self->date_is_set ) {
 		carp "Date not set for planet observation. Use clone_with_date() first.";
 		return;
 		}
@@ -178,7 +199,7 @@ Returns
 =cut
 
 sub Np ( $self ) {
-	unless( exists $self->{calc_date} ) {
+	unless( $self->date_is_set ) {
 		carp "Date not set for planet observation. Use clone_with_date() first.";
 		return;
 		}
@@ -197,7 +218,7 @@ Returns the mean anomaly, M, in degrees
 =cut
 
 sub mean_anomaly ( $self ) {
-	unless( exists $self->{calc_date} ) {
+	unless( $self->date_is_set ) {
 		carp "Date not set for planet observation. Use clone_with_date() first.";
 		return;
 		}
@@ -217,7 +238,7 @@ Returns the true anomaly, ν, in degrees
 =cut
 
 sub true_anomaly ( $self ) {
-	unless( exists $self->{calc_date} ) {
+	unless( $self->date_is_set ) {
 		carp "Date not set for planet observation. Use clone_with_date() first";
 		return;
 		}
@@ -234,6 +255,10 @@ Returns the heliocentric anomaly, l
 =cut
 
 sub heliocentric_anomaly ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
 	round(
 		shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
 		);
@@ -246,6 +271,10 @@ Returns the radius vector, r
 =cut
 
 sub radius_vector ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
 	round(
 		( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
 			/ # /
@@ -260,6 +289,10 @@ Returns the heliocentric latitude, ψ
 =cut
 
 sub heliocentric_latitude ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
 	round(
 		arcsin_d(
 			sin_d( $self->heliocentric_anomaly - $self->long_of_ascending_node )
