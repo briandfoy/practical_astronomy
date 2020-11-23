@@ -158,7 +158,7 @@ Returns the heliocentric anomaly, l
 =cut
 
 sub heliocentric_anomaly ( $self ) {
-	$self->true_anomaly + $self->long_at_perihelion
+	_shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
 	}
 
 =item * radius_vector
