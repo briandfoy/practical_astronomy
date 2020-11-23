@@ -56,8 +56,7 @@ sub days_since_epoch ( $self, $date=undef ) {
 		$date = sprintf '%4d-%02d-%02d', $y, $m, $d;
 		}
 
-	to_julian( split /-/, $date )
-		- to_julian( split /-/, $self->epoch );
+	to_julian( split /-/, $date ) - $self->epoch->julian;
 	}
 
 =item * name
