@@ -220,7 +220,7 @@ sub Np ( $self ) {
 	while(1) { last if $Np >=   0; $Np += 360 }
 	while(1) { last if $Np <= 360; $Np -= 360 }
 
-	round( shift_into_360( $Np ) )
+	round6( shift_into_360( $Np ) );
 	}
 
 =item * mean_anomaly
