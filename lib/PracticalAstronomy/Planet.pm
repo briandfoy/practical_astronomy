@@ -4,6 +4,7 @@ use File::FindLib qw(lib);
 
 package PracticalAstronomy::Planet;
 
+use PracticalAstronomy::JulianDate;
 use PracticalAstronomy::Util;
 use experimental qw(signatures);
 
@@ -134,7 +135,7 @@ Returns the mean anomaly, M
 
 sub mean_anomaly ( $self ) {
 	my $M =
-		( 360 / 365.242191 )
+		( 360 / days_in_year )
 		* ( $self->days_since_epoch / $self->orbital_period )
 		+ $self->eccentricity
 		+ $self->long_at_perihelion
