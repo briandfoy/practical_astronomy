@@ -44,12 +44,14 @@ subtest arccosine => sub {
 
 subtest tangent => sub {
 	ok( defined &tan_d, "tan_d is defined"  );
-
+	is( tan_d( 0), 0, 'tan_d( 0) is 0' );
+	is( tan_d(45), 1, 'tan_d(45) is 1' );
 	};
 
 subtest arctangent => sub {
 	ok( defined &arctan_d, "arctan_d is defined"  );
-
+	is( arctan_d(1), 45, 'arctan_d(1) is 45' );
+	is( arctan_d(0),  0, 'arctan_d(0) is  0' );
 	};
 
 done_testing();
