@@ -24,6 +24,12 @@ use experimental qw(signatures);
 Create a new planet object, although you probably want to go
 through L<PracticalAstronomy::PlanetsData>.
 
+The basic object is the (mostly) stable data and the date on which
+its based. To get any of the computed data (such as the radius vector),
+you need to set the observation date. You can make a new object with
+C<clone_with_date>, or set the date with C<set_data>. That allows you
+to make several objects for the same planet but different dates.
+
 The hash keys are:
 
 	P  - Planet
@@ -46,6 +52,12 @@ sub new { bless $_[1], $_[0] }
 =item * clone_with_date( $self, $y, $m, $d, $h = 0 )
 
 Copy the object and add an observation date.
+
+	my $plain = PracticalAstronomy::PlanetsData
+		->new($file)->data_for( 'Neptune' );
+
+	my $neptune20101122 = $plain->clone_with_date( $y, $m, $d, $h );
+	my $neptune20101123 = $plain->clone_with_date( $y, $m, $d, $h );
 
 =cut
 
