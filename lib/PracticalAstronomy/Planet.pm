@@ -248,6 +248,49 @@ sub true_anomaly ( $self ) {
 	round( shift_into_360( $ν ) );
 	}
 
+=item * eccentric_anomaly
+
+Uses Kepler's equation to determine the anomaly and is more precise
+than the true anomaly. Returns that value in degrees.
+
+1. Firstguess,putE=E0 =M.
+2. Find the value of δ = E −esinE −M.
+3. If† |δ|≤ε gotostep6.
+If |δ | > ε proceed with step 4.
+ε is the required accuracy (= 10−6 radians).
+4. Find ∆E = δ/(1−ecosE).
+5. TakenewvalueE1 =E−∆E. Gotostep2.
+6. The present value of E is the solution, correct to within ε of the true value.
+
+p.  107
+
+=cut
+
+use Math::Trig qw(rad2deg deg2rad);
+sub eccentric_anomaly ( $self, $precision = 1.e-6 ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
+	# Everything is in radians in this equation
+	my $M = deg2rad( $self->mean_anomaly );
+	my $e = $self->eccentricity;
+	my( $E0, $E ) = ( $M ) x 2; # Step 1
+
+	my sub δ  () { $E - $e * sin( $E ) - $M };
+	my sub ΔE () { δ() / ( 1 - $e * cos( $E ) ) };
+
+	my $steps;
+	LOOP: {
+		$steps++;
+		if( abs(δ) <= $precision ) { return round6( rad2deg( $E ) ) }
+		else                       { $E = $E - ΔE; redo   }
+		}
+
+	return;
+	}
+
+
 =item * heliocentric_anomaly
 
 Returns the heliocentric anomaly, l
