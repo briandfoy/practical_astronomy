@@ -13,6 +13,8 @@ our @EXPORT = qw(
 	π days_in_year
 	cos_d sin_d tan_d
 	arcsin_d arccos_d arctan_d
+	round round4 round6
+	shift_into_360
 	);
 
 =encoding utf8
@@ -26,6 +28,48 @@ PracticalAstronomy::Util
 	use PracticalAstronomy::Util;
 
 =head1 DESCRIPTION
+
+=head2 Basic math things
+
+=item * round( $n, $decimal_points = 6 )
+
+Rounds the floating point number to the specified number of decimal
+points, or 6 decimal places by default.
+
+Many of the numbers and results from the book are six decimal places
+but the computer can provide many more. Most of those extra digits are
+probably insignificant though.
+
+=item * round4( $n )
+
+Rounds the floating point number to four decimal places.
+
+=item * round6( $n )
+
+Rounds the floating point number to six decimal places. This is the
+same as the default behavior (currently), but is explicit about its
+behavior.
+
+=cut
+
+sub round ( $n, $digits = 6 ) { sprintf '%.*2$f', $n, $digits }
+
+sub round4 ( $n ) { round( $n, 4 ) }
+sub round6 ( $n ) { round( $n, 6 ) }
+
+=item * shift_into_360( $n )
+
+Add or subtract 360 degrees until the number is within 0 to 360.
+
+=cut
+
+sub shift_into_360 ( $n ) {
+	while(1) { last if $n >=   0; $n += 360 }
+	while(1) { last if $n <= 360; $n -= 360 }
+	$n;
+	}
+
+=back
 
 =head2 Trig functions for degrees
 
@@ -45,15 +89,15 @@ Return the tangent, given the angle in degrees
 
 =item * arccos_d( COSINE )
 
-Return the arccosine.
+Return the arccosine, in degrees.
 
 =item * arcsin_d( SINE )
 
-Return the arcsine.
+Return the arcsine, in degrees.
 
 =item * arctan_d( TAN )
 
-Return the arctangent.
+Return the arctangent, in degrees.
 
 =cut
 

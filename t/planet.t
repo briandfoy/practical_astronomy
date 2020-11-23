@@ -67,7 +67,8 @@ subtest jupiter_anomalies => sub {
 	can_ok( $plain, @methods );
 	is( $plain->name, $name, 'Correct planet name' );
 
-	my $planet = $plain->clone_with_date( 2003, 11, 22 );
+	my( $y, $m, $d ) = qw( 2003 11 22 );
+	my $planet = $plain->clone_with_date( $y, $m, $d );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
 
@@ -80,29 +81,52 @@ subtest jupiter_anomalies => sub {
 
 	is( sprintf( '%.6f', $planet->heliocentric_anomaly ), '156.236900', "heliocentric_anomaly for $name" );
 	is( sprintf( '%.6f', $planet->radius_vector ), '5.397121', "radius_vector for $name" );
-
 	};
-
-=pod
 
 # page 126
 subtest earth_anomalies => sub {
 	my $name = 'Earth';
-	my $planet = $planets->data_for( $name );
+	my $plain = $planets->data_for( $name );
+	isa_ok( $plain, $class );
+	can_ok( $plain, @methods );
+	is( $plain->name, $name, 'Correct planet name' );
+
+	my( $y, $m, $d ) = qw( 2003 11 22 );
+	my $planet = $plain->clone_with_date( $y, $m, $d );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
-	is( $planet->name, $name, 'Correct planet name' );
 
-	my( $y, $m, $d ) = ( 2003, 11, 22 );
-	my $elapsed = $planet->epoch->elapsed_to( $y, $m, $d );
-	is( $elapsed, -2231, "-2231 days to $y-$m-$d" );
+	is( $planet->days_since_epoch, -2231, "-2231 days to $y-$m-$d" );
 
-	is( sprintf( '%.6f', $planet->Np( $y, $m, $d ) ), '174.555932', 'Np is correct' );
+	is( $planet->Np, '321.011952', 'Np is correct' );
 
-	is( sprintf( '%.6f', $planet->mean_anomaly( $y, $m, $d ) ), '497.809764', "mean_anomaly for $name" );
-	is( sprintf( '%.6f', $planet->true_anomaly( $y, $m, $d ) ), '141.573600', "true_anomaly for $name" );
+	# book says 317.363223, but that's a round off error
+	is( $planet->mean_anomaly, '317.363224', "mean_anomaly for $name" );
+	is( $planet->true_anomaly, '316.069248', "true_anomaly for $name" );
+
+	is( $planet->heliocentric_anomaly, '59.274748', "heliocentric_anomaly for $name" );
+	is( $planet->radius_vector, '0.987847', "radius_vector for $name" );
 	};
 
-=cut
+# page 136
+subtest distance_to_jupiter => sub {
+	my( $y, $m, $d ) = qw( 2003 11 22 );
+
+	my $earth = $planets->data_for( 'Earth' )->clone_with_date( $y, $m, $d );
+	isa_ok( $earth, $class );
+	can_ok( $earth, qw(radius_vector heliocentric_anomaly) );
+	is( $earth->radius_vector, '0.987847', 'Radius to Earth' );
+	is( $earth->heliocentric_anomaly, '59.274748', 'Heliocentric anomaly for Earth' );
+
+	my $jupiter = $planets->data_for( 'Jupiter' )->clone_with_date( $y, $m, $d );
+	isa_ok( $jupiter, $class );
+	can_ok( $jupiter, qw(radius_vector heliocentric_anomaly heliocentric_latitude) );
+	is( $jupiter->radius_vector, '5.397121', 'Radius to Jupiter' );
+	is( $jupiter->heliocentric_anomaly, '156.236900', 'Heliocentric anomaly for Jupiter' );
+	is( $jupiter->heliocentric_latitude, '1.076044', 'Heliocentric latitude for Jupiter' );
+
+	can_ok( $earth, qw(distance_to) );
+	is( $earth->distance_to( $jupiter ), '5.603', 'Distance from earth to jupiter' );
+	};
 
 done_testing();

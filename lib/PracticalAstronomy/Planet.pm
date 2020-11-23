@@ -66,6 +66,28 @@ sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
 	$hash;
 	}
 
+=item * distance_to( PLANET )
+
+Returns the distance from the invocant planet to the specified one.
+
+=cut
+
+sub distance_to ( $self, $planet ) {
+	my $R = $self->radius_vector;
+	my $r = $planet->radius_vector;
+
+	my $L = $self->heliocentric_anomaly;
+	my $l = $planet->heliocentric_anomaly;
+
+	my $ψ = $planet->heliocentric_latitude;
+
+	my $ρ2 =
+		  $R ** 2
+		+ $r ** 2
+		- ( 2 * $R * $r * cos_d( $l - $L ) * cos_d( $ψ ) );
+
+	round( sqrt( $ρ2 ), 3 );
+	}
 
 =item * days_since_epoch
 
@@ -149,12 +171,6 @@ sub epoch                  { $_[0]->{ $K->_epoch_key                    } }
 sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
 
-sub _shift_into_360 ( $n ) {
-	while(1) { last if $n >=   0; $n += 360 }
-	while(1) { last if $n <= 360; $n -= 360 }
-	$n;
-	}
-
 =item * Np
 
 Returns
@@ -171,7 +187,7 @@ sub Np ( $self ) {
 	while(1) { last if $Np >=   0; $Np += 360 }
 	while(1) { last if $Np <= 360; $Np -= 360 }
 
-	_shift_into_360( $Np )
+	round( shift_into_360( $Np ) )
 	}
 
 =item * mean_anomaly
@@ -191,7 +207,7 @@ sub mean_anomaly ( $self ) {
 		+ $self->long_at_epoch
 		- $self->long_at_perihelion;
 
-	$M;
+	round( $M );
 	}
 
 =item * true_anomaly
@@ -207,11 +223,8 @@ sub true_anomaly ( $self ) {
 		}
 
 	my $M = $self->mean_anomaly;
-	say STDERR "Mp $M";
-	say STDERR "e ", $self->eccentricity;
 	my $ν = $M + (360/π) * $self->eccentricity * sin_d($M);
-	say STDERR "ν ", $ν;
-	_shift_into_360( $ν );
+	round( shift_into_360( $ν ) );
 	}
 
 =item * heliocentric_anomaly
@@ -221,7 +234,9 @@ Returns the heliocentric anomaly, l
 =cut
 
 sub heliocentric_anomaly ( $self ) {
-	_shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
+	round(
+		shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
+		);
 	}
 
 =item * radius_vector
@@ -231,9 +246,11 @@ Returns the radius vector, r
 =cut
 
 sub radius_vector ( $self ) {
-	( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
-		/ # /
-	( 1 +  $self->eccentricity * cos_d( $self->true_anomaly ) )
+	round(
+		( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
+			/ # /
+		( 1 +  $self->eccentricity * cos_d( $self->true_anomaly ) )
+		);
 	}
 
 =item * heliocentric_latitude
@@ -243,8 +260,11 @@ Returns the heliocentric latitude, ψ
 =cut
 
 sub heliocentric_latitude ( $self ) {
-	arcsin_d(
-		sin_d( $self->heliocentric_anomaly - $self->long_of_ascending_node ) * sin_d( $self->inclination )
+	round(
+		arcsin_d(
+			sin_d( $self->heliocentric_anomaly - $self->long_of_ascending_node )
+			* sin_d( $self->orbital_inclination )
+			)
 		);
 	}
 
