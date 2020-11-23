@@ -1,7 +1,11 @@
+use v5.26;
 use utf8;
-use open qw(:std :utf8);
+use Test2::V0;
+use Test2::Tools::Warnings qw/warns warning warnings no_warnings/;
 
-use Test::More 1;
+use open qw(:std :utf8);
+use experimental qw(signatures);
+
 
 use File::FindLib qw(lib);
 use Mojo::Util qw(dumper);
@@ -11,8 +15,8 @@ my $planets;
 subtest planets_data => sub {
 	my $class     = 'PracticalAstronomy::PlanetsData';
 	my $data_file = 'data/planetary_data_2010.json';
-	use_ok( $class );
-	ok( -e $data_file, "Data file <$file> exists" );
+	ok( eval "use $class; 1", "Class $class loads" ) or diag( $@ );
+	ok( -e $data_file, "Data file <$data_file> exists" );
 	$planets = $class->new_from_file( $data_file );
 	} or BAIL_OUT();
 
@@ -32,6 +36,7 @@ my @methods   = qw(
 	true_anomaly
 	heliocentric_anomaly
 	radius_vector
+	eccentric_anomaly
 	);
 
 subtest load_planet => sub {
@@ -59,12 +64,42 @@ subtest methods => sub {
 	is( $planet->visual_magnitude_1au,   '-4.40',     'visual_magnitude_1au for Venus'   );
 	};
 
+sub test_plain ( $plain ) {
+	isa_ok( $plain, $class );
+	can_ok( $plain, @methods );
+	ok( ! $plain->date_is_set, "Date is not set in plain object" );
+	}
+
+subtest plain => sub {
+	my $plain = $planets->data_for( 'Uranus' );
+	test_plain( $plain );
+
+	my @computing_methods = qw(
+		days_since_epoch
+		Np mean_anomaly true_anomaly eccentric_anomaly
+		heliocentric_anomaly radius_vector heliocentric_latitude
+		);
+
+	foreach my $method ( @computing_methods ) {
+		ok( ! $plain->date_is_set, "Date is not set in plain object" );
+
+		my $rc = do {
+			local *STDERR;
+			open STDERR, '>', \my $warning;
+			[ $plain->$method() // undef, $warning ];
+			};
+
+		ok( ! defined $rc->[0], "Method <$method> for plain object returns undef" )
+			or diag( "$method returned <$rc->[0]>" );
+		like( $rc->[1], qr/\ADate not set/, "Method <$method> for plain object warns" );
+		}
+	};
+
 # page 126
 subtest jupiter_anomalies => sub {
 	my $name = 'Jupiter';
 	my $plain = $planets->data_for( $name );
-	isa_ok( $plain, $class );
-	can_ok( $plain, @methods );
+	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
 	my( $y, $m, $d ) = qw( 2003 11 22 );
@@ -87,8 +122,7 @@ subtest jupiter_anomalies => sub {
 subtest earth_anomalies => sub {
 	my $name = 'Earth';
 	my $plain = $planets->data_for( $name );
-	isa_ok( $plain, $class );
-	can_ok( $plain, @methods );
+	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
 	my( $y, $m, $d ) = qw( 2003 11 22 );
@@ -106,6 +140,26 @@ subtest earth_anomalies => sub {
 
 	is( $planet->heliocentric_anomaly, '59.274748', "heliocentric_anomaly for $name" );
 	is( $planet->radius_vector, '0.987847', "radius_vector for $name" );
+	};
+
+subtest eccentric_anomaly => sub {
+	my $name = 'Mars';
+	my $plain = $planets->data_for( $name );
+	test_plain( $plain );
+	is( $plain->name, $name, 'Correct planet name' );
+
+	my( $y, $m, $d ) = qw( 2003 11 22 );
+	my $planet = $plain->clone_with_date( $y, $m, $d );
+	isa_ok( $planet, $class );
+	can_ok( $planet, @methods );
+
+	diag( "Mars mean anomaly: " . $planet->mean_anomaly );
+	diag( "Mars true anomaly: " . $planet->true_anomaly );
+
+	my $E = $planet->eccentric_anomaly;
+	# I have not verified this result, but it's between the mean and
+	# true anomaly: M 43.685408 ν 51.073733
+	is( $E, '47.637347', 'eccentric_anomaly for Mars' );
 	};
 
 # page 136
