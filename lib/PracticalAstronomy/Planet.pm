@@ -170,7 +170,7 @@ Returns the radius vector, r
 sub radius_vector ( $self ) {
 	( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
 		/ # /
-	( 1 +  $self->eccentricity * cos( $self->true_anomaly ) )
+	( 1 +  $self->eccentricity * cos_d( $self->true_anomaly ) )
 	}
 
 =item * heliocentric_latitude
@@ -180,8 +180,8 @@ Returns the heliocentric latitude, ψ
 =cut
 
 sub heliocentric_latitude ( $self ) {
-	arcsin(
-		sin( $self->heliocentric_anomaly - $self->long_of_ascending_node ) * sin( $self->inclination )
+	arcsin_d(
+		sin_d( $self->heliocentric_anomaly - $self->long_of_ascending_node ) * sin_d( $self->inclination )
 		);
 	}
 
