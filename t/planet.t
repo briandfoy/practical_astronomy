@@ -70,6 +70,12 @@ sub test_plain ( $plain ) {
 	ok( ! $plain->date_is_set, "Date is not set in plain object" );
 	}
 
+sub test_cloned ( $cloned ) {
+	isa_ok( $cloned, $class );
+	can_ok( $cloned, @methods );
+	ok( $cloned->date_is_set, "Date is set in cloned object" );
+	}
+
 subtest plain => sub {
 	my $plain = $planets->data_for( 'Uranus' );
 	test_plain( $plain );
@@ -94,6 +100,27 @@ subtest plain => sub {
 		like( $rc->[1], qr/\ADate not set/, "Method <$method> for plain object warns" );
 		}
 	};
+
+subtest Np => sub {
+	my $name = 'Mercury';
+	my $plain = $planets->data_for( $name );
+	test_plain( $plain );
+	is( $plain->name, $name, 'Correct planet name' );
+
+	my $year = $plain->epoch->year;
+	ok( defined $year, "Epoch has a year" );
+
+	# Only needs to be more recent than the epoch
+	my $future = $plain->clone_with_date( $year + 1, 1, 0 );
+	test_cloned( $future );
+	is( $future->Np, '53.715113', 'Np a year later' );
+
+	# Only needs to be less recent than the epoch
+	my $past = $plain->clone_with_date( $year - 1, 1, 0 );
+	test_cloned( $past );
+	is( $past->Np, '306.284887', 'Np a year ago' );
+	};
+
 
 # page 126
 subtest jupiter_anomalies => sub {
