@@ -1,3 +1,4 @@
+t/mojo_roles.t
 t/util.t
 t/basic_math.t
 t/trig.t
