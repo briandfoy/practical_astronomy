@@ -14,7 +14,10 @@ BEGIN {
 
 subtest constants => sub {
 	ok( defined &π, 'π is a subroutine' );
-	ok( defined π, 'π returns a defined value' );
+	ok( defined  π, 'π returns a defined value' );
+
+	ok( defined &AU, 'AU is a subroutine' );
+	ok( defined  AU, 'AU returns a defined value' );
 	};
 
 done_testing();

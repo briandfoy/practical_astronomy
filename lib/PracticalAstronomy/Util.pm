@@ -10,7 +10,8 @@ use Carp     qw(croak);
 use Exporter qw(import);
 
 our @EXPORT = qw(
-	π days_in_year
+	π AU
+	days_in_year
 	cos_d sin_d tan_d
 	arcsin_d arccos_d arctan_d
 	round round4 round6
@@ -129,6 +130,12 @@ Returns the days in year, to six decimal places
 =cut
 
 sub days_in_year () { '365.242191' }
+
+=item * AU
+
+=cut
+
+sub AU () { '149597870700' }
 
 =back
 
