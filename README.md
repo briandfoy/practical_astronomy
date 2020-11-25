@@ -13,3 +13,11 @@ little programming trickery or cleverness.
 Input data are in _data/_. They look like CSV files, but I include a
 few lines at the top to note their source. Files are tagged with 1990
 (Third Edition) or 2010 (Fourth Edition).
+
+
+
+## Interesting links
+
+* [Is there free, accurate and updated data on planetary body positions in the solar system?
+](https://space.stackexchange.com/a/13958)
+* [Skyfield](https://rhodesmill.org/skyfield/)
