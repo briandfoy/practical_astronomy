@@ -25,7 +25,7 @@ Create a new planet object, although you probably want to go
 through L<PracticalAstronomy::PlanetsData>.
 
 The basic object is the (mostly) stable data and the date on which
-its based. To get any of the computed data (such as the radius vector),
+its based. To get any of the computed data (such as the radius),
 you need to set the observation date. You can make a new object with
 C<clone_with_date>, or set the date with C<set_data>. That allows you
 to make several objects for the same planet but different dates.
@@ -76,13 +76,31 @@ sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
 	$hash;
 	}
 
-=item * set_date( $y, $m, $d, $h = 0 )
+=item * clone_with_now()
+
+Like C<clone_with_date>, but uses the current time.
+
+=cut
+
+sub clone_with_now ( $self ) {
+	my( $y, $m, $d, $h ) = (gmtime)[5,4,3,2];
+	$y += 1900;
+	$m += 1;
+
+	$self->clone_with_date( $y, $m, $d, $h );
+	}
+
+=item * set_date( YEAR, MONTH, DATE [, HOUR24] )
 
 Set the date for the observation. The computed values use this date.
 
 =item * date_is_set()
 
 Returns true if the object has had the date set, and false otherwise.
+
+=item * date()
+
+Return the list of the year, month, date, and hour.
 
 =cut
 
@@ -99,6 +117,10 @@ sub date_is_set ( $self ) {
 	return exists $self->{calc_date}{year}
 	}
 
+sub date ( $self ) {
+	map { $self->{calc_date}{$_} } qw(year month date hour);
+	}
+
 =item * distance_to( PLANET )
 
 Returns the distance from the invocant planet to the specified one.
@@ -106,12 +128,12 @@ Returns the distance from the invocant planet to the specified one.
 =cut
 
 sub distance_to ( $self, $planet ) {
-	my $R = $self->radius_vector;
-	my $r = $planet->radius_vector;
+	my $R = $self->radius;
+	my $r = $planet->radius;
 
-	my $L = $self->heliocentric_anomaly;
-	my $l = $planet->heliocentric_anomaly;
+	my $L = $self->heliocentric_longitude;
 
+	my $l = $planet->heliocentric_longitude;
 	my $ψ = $planet->heliocentric_latitude;
 
 	my $ρ2 =
@@ -206,7 +228,7 @@ sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
 =item * Np
 
-Returns
+Returns the progress along the orbit.
 
 =cut
 
@@ -302,30 +324,13 @@ sub eccentric_anomaly ( $self, $precision = 1.e-6 ) {
 	return;
 	}
 
+=item * radius
 
-=item * heliocentric_anomaly
-
-Returns the heliocentric anomaly, l
-
-=cut
-
-sub heliocentric_anomaly ( $self ) {
-	unless( $self->date_is_set ) {
-		carp "Date not set for planet observation. Use clone_with_date() first";
-		return;
-		}
-	round(
-		shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
-		);
-	}
-
-=item * radius_vector
-
-Returns the radius vector, r
+Returns the radius vector magnitude, r, in AU
 
 =cut
 
-sub radius_vector ( $self ) {
+sub radius ( $self ) {
 	unless( $self->date_is_set ) {
 		carp "Date not set for planet observation. Use clone_with_date() first";
 		return;
@@ -334,6 +339,22 @@ sub radius_vector ( $self ) {
 		( $self->semi_major_axis * ( 1 - $self->eccentricity ** 2 ) )
 			/ # /
 		( 1 +  $self->eccentricity * cos_d( $self->true_anomaly ) )
+		);
+	}
+
+=item * heliocentric_longitude
+
+Returns the heliocentric longitude, l
+
+=cut
+
+sub heliocentric_longitude ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
+	round(
+		shift_into_360( $self->true_anomaly  + $self->long_at_perihelion )
 		);
 	}
 
@@ -350,11 +371,47 @@ sub heliocentric_latitude ( $self ) {
 		}
 	round(
 		arcsin_d(
-			sin_d( $self->heliocentric_anomaly - $self->long_of_ascending_node )
+			sin_d( $self->heliocentric_longitude - $self->long_of_ascending_node )
 			* sin_d( $self->orbital_inclination )
 			)
 		);
 	}
+
+=item * heliocentric_longitude_projected
+
+Returns the heliocentric longitude projected onto the ecliptic, l'
+
+=cut
+
+sub heliocentric_longitude_projected ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
+	round(
+		arctan_d(
+			tan_d( $self->heliocentric_longitude - $self->long_of_ascending_node ) * cos_d( $self->orbital_inclination)
+			)
+		+ $self->long_of_ascending_node
+		);
+	}
+
+=item * radius_projected
+
+Returns the radius vector magnitude as projected onto the ecliptic, r'
+
+=cut
+
+sub radius_projected ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first";
+		return;
+		}
+	round(
+		$self->radius * cos_d( $self->heliocentric_latitude )
+		);
+	}
+
 
 =cut
 
