@@ -69,7 +69,7 @@ sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
 	delete $hash->{calc_date};
 	delete $hash->{computed};
 
-	$hash->set_date( $y, $m, $d, $h = 0 );
+	$hash->set_date( $y, $m, $d, $h );
 
 	$hash->{calc_date}{elapsed} = $hash->epoch->elapsed_to( $y, $m, $d, $h );
 
