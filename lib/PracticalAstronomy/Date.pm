@@ -150,13 +150,18 @@ Returns the Julian date
 
 sub julian { $_[0]->{'julian'} }
 
-=item * modified_julian
+=item * modified_julian( [DATE] )
 
-Returns the modified Julian date ( 0 time at 0h on 17 November 1858 )
+Returns the modified Julian date ( epoch time at 0h on 17 November 1858 ).
+
+Optionally, pass this a ::Date object to use a different offset. For
+example, the ecliptic of the obliquity uses 2000 Jan 1.5.
 
 =cut
 
-sub modified_julian { $_[0]->julian - 2400000.5 }
+sub modified_julian ( $self, $offset = __PACKAGE__->new(1858,11,17) ) {
+	$self->julian - $offset->julian;
+	}
 
 =item * elapsed_to
 
