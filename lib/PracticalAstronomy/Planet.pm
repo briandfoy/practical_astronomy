@@ -120,6 +120,26 @@ sub date ( $self ) {
 	map { $self->{calc_date}{$_} } qw(year month date hour);
 	}
 
+=item * days_since_epoch()
+
+Returns the number of days since the epoch for this data.
+
+=cut
+
+sub days_since_epoch ( $self ) {
+	unless( $self->date_is_set ) {
+		carp "Date not set for planet observation. Use clone_with_date() first.";
+		return;
+		}
+	$self->{calc_date}{elapsed};
+	}
+
+=back
+
+=head2 Methods that deal with other planets
+
+=over 4
+
 =item * distance_to( PLANET )
 
 Returns the distance from the invocant planet to the specified one.
@@ -143,19 +163,11 @@ sub distance_to ( $self, $planet ) {
 	round( sqrt( $ρ2 ), 3 );
 	}
 
-=item * days_since_epoch()
+=back
 
-Returns the number of days since the epoch for this data.
+=head2 Planet things
 
-=cut
-
-sub days_since_epoch ( $self ) {
-	unless( $self->date_is_set ) {
-		carp "Date not set for planet observation. Use clone_with_date() first.";
-		return;
-		}
-	$self->{calc_date}{elapsed};
-	}
+=over 4
 
 =item * name
 
