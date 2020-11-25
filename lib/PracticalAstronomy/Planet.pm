@@ -5,7 +5,6 @@ use File::FindLib qw(lib);
 package PracticalAstronomy::Planet;
 
 use Carp qw(croak carp);
-use PracticalAstronomy::JulianDate;
 use PracticalAstronomy::Util;
 use experimental qw(signatures);
 
