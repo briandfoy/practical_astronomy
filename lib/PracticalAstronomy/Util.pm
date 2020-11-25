@@ -16,6 +16,7 @@ our @EXPORT = qw(
 	arcsin_d arccos_d arctan_d
 	round round4 round6
 	shift_into_360
+	ecliptic_obliquity
 	);
 
 =encoding utf8
@@ -138,6 +139,32 @@ sub days_in_year () { '365.242191' }
 sub AU () { '149597870700' }
 
 =back
+
+=head2 Physical variables
+
+=over 4
+
+=item * ecliptic_obliquity, ε
+
+=cut
+
+sub ecliptic_obliquity ( $date ) {
+	my $j   = $date->julian;
+	my $mjd = $date->modified_julian(
+		(ref $date)->ecliptic_olbiquity_epoch
+		);
+
+	my $T = round( $mjd / 36525.0, 9 ); # Number of centuries
+
+	my $DE =
+		46.815    * $T
+		+ 0.0006  * $T**2
+		- 0.00181 * $T**3;
+
+	$DE /= 3600;
+
+	my $ε = round6( 23.439292 - $DE );
+	}
 
 =cut
 

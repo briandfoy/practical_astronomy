@@ -20,4 +20,27 @@ subtest constants => sub {
 	ok( defined  AU, 'AU returns a defined value' );
 	};
 
+subtest obliquity => sub {
+	my $date_class = 'PracticalAstronomy::Date';
+	use_ok( $date_class );
+	my $date = $date_class->new( 2009, 7, 6 );
+	isa_ok( $date, $date_class );
+	is( $date->julian, '2455018.5', 'Julian date is correct' );
+
+	my $epoch = $date->ecliptic_olbiquity_epoch;
+	is(
+		$epoch->julian, '2451545',
+		'ecliptic olbiquity epoch is correct'
+		);
+
+	is(
+		$date->modified_julian( $epoch ),
+		'3473.5',
+		'Modified Julian date is correct'
+		);
+
+	ok( defined &ecliptic_obliquity, 'ecliptic_obliquity is a subroutine' );
+	is( ecliptic_obliquity($date), '23.438055', 'ecliptic_obliquity returns expected value' );
+	};
+
 done_testing();
