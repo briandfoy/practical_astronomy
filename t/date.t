@@ -17,6 +17,23 @@ subtest basic_date => sub {
 	is( $jd, "2446113.75", "Feb 17, 1985 at 6am is 2446113.75" );
 	};
 
+subtest new_from_now => sub {
+	my $now = $class->new_from_now;
+	isa_ok( $now, $class );
+
+	my( $year, $month, $day, $hour ) = (gmtime)[5,4,3,2];
+	$year += 1900;
+	$month += 1;
+
+	my @methods = qw( year month day hour );
+	can_ok( $now, @methods );
+
+	is( $now->year,  $year,  "Returns the right year" );
+	is( $now->month, $month, "Returns the right month" );
+	is( $now->day,   $day,   "Returns the right day" );
+	is( $now->hour,  $hour,  "Returns the right hour" );
+	};
+
 subtest basic_object => sub {
 	my( $year, $month, $day, $hour ) = qw(1990 1 0 0);
 	my $start = $class->new( $year, $month, $day, $hour );
