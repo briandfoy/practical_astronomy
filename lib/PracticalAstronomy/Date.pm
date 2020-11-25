@@ -127,6 +127,21 @@ sub new_from_now ( $class ) {
 	$class->new( 1900+$y, 1+$m, $d, $h );
 	}
 
+=item * ecliptic_olbiquity_epoch
+
+Returns a date object for the epoch for the olbiquity of the ecliptic.
+
+=cut
+
+sub ecliptic_olbiquity_epoch ( $class ) {
+	state $obj = __PACKAGE__->new( 2000, 1, 1, 12 );
+	$obj;
+	}
+
+=head2 Accessors
+
+=over 4
+
 =item * year
 
 =item * month
