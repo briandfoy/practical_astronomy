@@ -1,6 +1,7 @@
 use v5.26;
 use utf8;
 use Test2::V0;
+use Test2::Bundle::More;
 use Test2::Tools::Warnings qw/warns warning warnings no_warnings/;
 
 use open qw(:std :utf8);
@@ -34,9 +35,12 @@ my @methods   = qw(
 	visual_magnitude_1au
 	mean_anomaly
 	true_anomaly
-	heliocentric_anomaly
-	radius_vector
+	heliocentric_longitude
+	heliocentric_latitude
+	radius
 	eccentric_anomaly
+	heliocentric_longitude_projected
+	radius_projected
 	);
 
 subtest load_planet => sub {
@@ -74,6 +78,10 @@ sub test_cloned ( $cloned ) {
 	isa_ok( $cloned, $class );
 	can_ok( $cloned, @methods );
 	ok( $cloned->date_is_set, "Date is set in cloned object" );
+
+	can_ok( $cloned, 'epoch' );
+	isa_ok( $cloned->epoch, 'PracticalAstronomy::JulianDate' );
+	can_ok( $cloned->epoch, qw(year month day hour) );
 	}
 
 subtest plain => sub {
@@ -83,7 +91,8 @@ subtest plain => sub {
 	my @computing_methods = qw(
 		days_since_epoch
 		Np mean_anomaly true_anomaly eccentric_anomaly
-		heliocentric_anomaly radius_vector heliocentric_latitude
+		heliocentric_longitude heliocentric_latitude
+		radius
 		);
 
 	foreach my $method ( @computing_methods ) {
@@ -98,6 +107,27 @@ subtest plain => sub {
 		ok( ! defined $rc->[0], "Method <$method> for plain object returns undef" )
 			or diag( "$method returned <$rc->[0]>" );
 		like( $rc->[1], qr/\ADate not set/, "Method <$method> for plain object warns" );
+		}
+	};
+
+subtest clone_with_now => sub {
+	my $name = 'Neptune';
+	my $plain = $planets->data_for( $name );
+	test_plain( $plain );
+	is( $plain->name, $name, 'Correct planet name' );
+
+	can_ok( $plain, qw(clone_with_date clone_with_now) );
+
+	my $with_now = $plain->clone_with_now;
+	test_cloned( $with_now );
+	my @date = $with_now->date;
+	diag( "Date is @date" );
+
+	my $with_date = $plain->clone_with_date( @date );
+	test_cloned( $with_date );
+
+	foreach my $method ( @methods ) {
+		is( $with_now->$method(), $with_date->$method(), "Method <$method> returns the same value" );
 		}
 	};
 
@@ -141,8 +171,13 @@ subtest jupiter_anomalies => sub {
 	is( sprintf( '%.6f', $planet->mean_anomaly ), '497.809764', "mean_anomaly for $name" );
 	is( sprintf( '%.6f', $planet->true_anomaly ), '141.573600', "true_anomaly for $name" );
 
-	is( sprintf( '%.6f', $planet->heliocentric_anomaly ), '156.236900', "heliocentric_anomaly for $name" );
-	is( sprintf( '%.6f', $planet->radius_vector ), '5.397121', "radius_vector for $name" );
+	is( sprintf( '%.6f', $planet->heliocentric_longitude ), '156.236900', "heliocentric_longitude for $name" );
+	is( sprintf( '%.6f', $planet->radius ), '5.397121', "radius for $name" );
+	is( $planet->heliocentric_latitude, '1.076044', "heliocentric_latitude for $name" );
+
+	# book says 5.396170
+	is( $planet->radius_projected, '5.396169', "projected radius for $name" );
+	is( $planet->heliocentric_longitude_projected, '156.229991', "heliocentric_latitude_projected for $name" );
 	};
 
 # page 126
@@ -165,8 +200,38 @@ subtest earth_anomalies => sub {
 	is( $planet->mean_anomaly, '317.363224', "mean_anomaly for $name" );
 	is( $planet->true_anomaly, '316.069248', "true_anomaly for $name" );
 
-	is( $planet->heliocentric_anomaly, '59.274748', "heliocentric_anomaly for $name" );
-	is( $planet->radius_vector, '0.987847', "radius_vector for $name" );
+	is( $planet->heliocentric_longitude, '59.274748', "heliocentric_longitude for $name" );
+	is( $planet->radius, '0.987847', "radius for $name" );
+	is( $planet->heliocentric_latitude, '0.000000', "heliocentric_latitude for $name" );
+	};
+
+# page 128
+subtest mercury_anomalies => sub {
+	my $name = 'Mercury';
+	my $plain = $planets->data_for( $name );
+	test_plain( $plain );
+	is( $plain->name, $name, 'Correct planet name' );
+
+	my( $y, $m, $d ) = qw( 2003 11 22 );
+	my $planet = $plain->clone_with_date( $y, $m, $d );
+	isa_ok( $planet, $class );
+	can_ok( $planet, @methods );
+
+	is( $planet->days_since_epoch, -2231, "-2231 days to $y-$m-$d" );
+
+	# is( $planet->Np, '321.011952', 'Np is correct' );
+
+	# is( $planet->mean_anomaly, '317.363224', "mean_anomaly for $name" );
+	# book says 210.400253
+	is( $planet->true_anomaly, '210.400254', "true_anomaly for $name" );
+
+	# book says 288.012253
+	is( $planet->heliocentric_longitude, '288.012254', "heliocentric_longitude for $name" );
+	is( $planet->radius, '0.450657', "radius for $name" );
+	is( $planet->heliocentric_latitude, '-6.035842', "heliocentric_latitude for $name" );
+
+	is( $planet->radius_projected, '0.448159', "projected radius for $name" );
+	is( $planet->heliocentric_longitude_projected, '287.824406', "heliocentric_longitude_projected for $name" );
 	};
 
 subtest eccentric_anomaly => sub {
@@ -195,15 +260,15 @@ subtest distance_to_jupiter => sub {
 
 	my $earth = $planets->data_for( 'Earth' )->clone_with_date( $y, $m, $d );
 	isa_ok( $earth, $class );
-	can_ok( $earth, qw(radius_vector heliocentric_anomaly) );
-	is( $earth->radius_vector, '0.987847', 'Radius to Earth' );
-	is( $earth->heliocentric_anomaly, '59.274748', 'Heliocentric anomaly for Earth' );
+	can_ok( $earth, qw(radius heliocentric_longitude) );
+	is( $earth->radius, '0.987847', 'Radius to Earth' );
+	is( $earth->heliocentric_longitude, '59.274748', 'Heliocentric longitude for Earth' );
 
 	my $jupiter = $planets->data_for( 'Jupiter' )->clone_with_date( $y, $m, $d );
 	isa_ok( $jupiter, $class );
-	can_ok( $jupiter, qw(radius_vector heliocentric_anomaly heliocentric_latitude) );
-	is( $jupiter->radius_vector, '5.397121', 'Radius to Jupiter' );
-	is( $jupiter->heliocentric_anomaly, '156.236900', 'Heliocentric anomaly for Jupiter' );
+	can_ok( $jupiter, qw(radius heliocentric_longitude heliocentric_latitude) );
+	is( $jupiter->radius, '5.397121', 'Radius to Jupiter' );
+	is( $jupiter->heliocentric_longitude, '156.236900', 'Heliocentric longitude for Jupiter' );
 	is( $jupiter->heliocentric_latitude, '1.076044', 'Heliocentric latitude for Jupiter' );
 
 	can_ok( $earth, qw(distance_to) );
