@@ -1,4 +1,4 @@
-package PracticalAstronomy::JulianDate;
+package PracticalAstronomy::Date;
 use v5.26;
 use utf8;
 use experimental qw(signatures);
@@ -10,28 +10,32 @@ our @EXPORT = qw( to_julian elapsed_days );
 
 =head1 NAME
 
-PracticalAstronomy::JulianDate - an object to represent a Julian date
+PracticalAstronomy::Date - an object to represent a date
 
 =head1 SYNOPSIS
 
 The object interface:
 
-	use PracticalAstronomy::JulianDate;
+	use PracticalAstronomy::Date;
 
-	my $start = PracticalAstronomy::JulianDate->new(
+	my $start = PracticalAstronomy::Date->new(
 		2010, 1, 0, 0  # year, month, day, hour24
 		);
 
 	my $elapsed = $start->elapsed_to( $y, $m, $d, $h );
+	my $julian  = $start->julian;
+	my $mjd     = $start->modified_julian;
 
 The functional interface:
 
-	use PracticalAstronomy::JulianDate;
+	use PracticalAstronomy::Date;
 	my $start = to_julian( $y, $m, $d, $h );
 	my $later = to_julian( $y1, $m1, $d1, $h1 );
 	my $elapsed = elapsed_days( $later, $start );
 
 =head1 DESCRIPTION
+
+This represents dates from UTC for astronomical computations.
 
 =head2 Functions for Julian dates
 
@@ -92,6 +96,10 @@ sub elapsed_days ( $j1, $j2 ) { $j2 - $j1 }
 
 =item * new( YEAR, MONTH, DAY [, HOUR24 = 0 ] )
 
+Return a new date object based on the year, month, day, and hour
+(in UT).
+
+The hour is in 24 hour time and can be a fraction.
 
 =cut
 
@@ -106,6 +114,17 @@ sub new ( $class, $y, $m, $d, $h = 0 ) {
 	$self->{julian} = to_julian( $y, $m, $d, $h );
 
 	$self;
+	}
+
+=item * new_from_now( YEAR, MONTH, DAY [, HOUR24 = 0 ] )
+
+Return a new date object using the current time.
+
+=cut
+
+sub new_from_now ( $class ) {
+	my( $y, $m, $d, $h ) = (gmtime)[5, 4, 3, 2];
+	$class->new( 1900+$y, 1+$m, $d, $h );
 	}
 
 =item * year
@@ -131,8 +150,17 @@ Returns the Julian date
 
 sub julian { $_[0]->{'julian'} }
 
+=item * modified_julian
+
+Returns the modified Julian date ( 0 time at 0h on 17 November 1858 )
+
+=cut
+
+sub modified_julian { $_[0]->julian - 2400000.5 }
+
 =item * elapsed_to
 
+Returns the number of julian days between the two dates.
 
 =cut
 

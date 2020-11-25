@@ -4,7 +4,7 @@ use File::FindLib qw(lib);
 
 my $class;
 BEGIN {
-$class = 'PracticalAstronomy::JulianDate';
+$class = 'PracticalAstronomy::Date';
 subtest load => sub {
 	use_ok( $class );
 	} or BAIL_OUT();

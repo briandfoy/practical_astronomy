@@ -80,7 +80,7 @@ sub test_cloned ( $cloned ) {
 	ok( $cloned->date_is_set, "Date is set in cloned object" );
 
 	can_ok( $cloned, 'epoch' );
-	isa_ok( $cloned->epoch, 'PracticalAstronomy::JulianDate' );
+	isa_ok( $cloned->epoch, 'PracticalAstronomy::Date' );
 	can_ok( $cloned->epoch, qw(year month day hour) );
 	}
 

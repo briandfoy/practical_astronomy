@@ -12,7 +12,7 @@ my $MojoFile = Mojo::File->with_roles(qw(
 	));
 use Mojo::Util qw(dumper);
 
-use PracticalAstronomy::JulianDate;
+use PracticalAstronomy::Date;
 use PracticalAstronomy::Planet;
 
 =encoding utf8
@@ -94,7 +94,7 @@ sub data_for ( $self, $name ) {
 	return unless ref $planet;
 
 	$planet->{ $self->_epoch_key  } =
-		PracticalAstronomy::JulianDate->new( split /-/, $self->_meta->{epoch} );
+		PracticalAstronomy::Date->new( split /-/, $self->_meta->{epoch} );
 	$planet->{ $self->_symbol_key } = $self->symbol_for( $name );
 
 	PracticalAstronomy::Planet->new( $planet );
