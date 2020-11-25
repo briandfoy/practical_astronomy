@@ -35,12 +35,10 @@ my @methods   = qw(
 	visual_magnitude_1au
 	mean_anomaly
 	true_anomaly
-	heliocentric_longitude
+	heliocentric_longitude heliocentric_longitude_projected
 	heliocentric_latitude
-	radius
+	radius radius_projected
 	eccentric_anomaly
-	heliocentric_longitude_projected
-	radius_projected
 	);
 
 subtest load_planet => sub {
@@ -92,7 +90,8 @@ subtest plain => sub {
 		days_since_epoch
 		Np mean_anomaly true_anomaly eccentric_anomaly
 		heliocentric_longitude heliocentric_latitude
-		radius
+		heliocentric_longitude_projected
+		radius radius_projected
 		);
 
 	foreach my $method ( @computing_methods ) {
