@@ -1,3 +1,5 @@
+use v5.26;
+
 use Test::More 1;
 
 use File::FindLib qw(lib);
