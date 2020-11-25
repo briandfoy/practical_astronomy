@@ -49,7 +49,7 @@ The hash keys are:
 
 sub new { bless $_[1], $_[0] }
 
-=item * clone_with_date( $self, $y, $m, $d, $h = 0 )
+=item * clone_with_date( YEAR, MONTH, DATE [, HOUR24] )
 
 Copy the object and add an observation date.
 
@@ -122,7 +122,7 @@ sub distance_to ( $self, $planet ) {
 	round( sqrt( $ρ2 ), 3 );
 	}
 
-=item * days_since_epoch
+=item * days_since_epoch()
 
 Returns the number of days since the epoch for this data.
 
