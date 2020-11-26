@@ -133,7 +133,7 @@ sub decimal_to_dms ( $decimal ) {
 	my( $d, $m, $s, $frac );
 	( $d, $frac ) = split /\./, $decimal;
 	( $m, $frac ) = split /\./, "0.$frac" * 60;
-	( $s )        = split /\./, "0.$frac" * 60;
+	( $s )        = sprintf "%.0f", "0.$frac" * 60;
 
 	[ $d, $m, $s ];
 	}
