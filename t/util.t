@@ -40,7 +40,7 @@ subtest obliquity => sub {
 		);
 
 	ok( defined &ecliptic_obliquity, 'ecliptic_obliquity is a subroutine' );
-	is( ecliptic_obliquity($date), '23.438055', 'ecliptic_obliquity returns expected value' );
+	is( ecliptic_obliquity($date), '23.43805531', 'ecliptic_obliquity returns expected value' );
 	};
 
 # page 39
