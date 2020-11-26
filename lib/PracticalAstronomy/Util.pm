@@ -165,6 +165,7 @@ sub π () { '3.1415927' }
 =item * days_in_year
 
 Returns the days in year, to six decimal places
+
 =cut
 
 sub days_in_year () { '365.242191' }
