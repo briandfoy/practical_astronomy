@@ -200,7 +200,7 @@ sub ecliptic_obliquity ( $date ) {
 
 	$DE /= 3600;
 
-	my $ε = round6( 23.439292 - $DE );
+	my $ε = round( 23.439292 - $DE, 8 );
 	}
 
 =cut
