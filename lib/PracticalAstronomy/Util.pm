@@ -194,7 +194,7 @@ sub ecliptic_obliquity ( $date ) {
 	my $T = round( $mjd / 36525.0, 9 ); # Number of centuries
 
 	my $DE =
-		46.815    * $T
+		 46.815   * $T
 		+ 0.0006  * $T**2
 		- 0.00181 * $T**3;
 
