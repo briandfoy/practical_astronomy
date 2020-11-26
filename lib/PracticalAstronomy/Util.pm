@@ -17,6 +17,7 @@ our @EXPORT = qw(
 	round round4 round6
 	shift_into_360
 	ecliptic_obliquity
+	decimal_to_dms dms_to_decimal
 	);
 
 =encoding utf8
@@ -112,6 +113,42 @@ sub tan_d    ( $d ) {  tan( deg2rad($d) ) }
 sub arccos_d ( $x ) { rad2deg( acos($x) ) }
 sub arcsin_d ( $x ) { rad2deg( asin($x) ) }
 sub arctan_d ( $x ) { rad2deg( atan($x) ) }
+
+=back
+
+=head2 Angle conversions
+
+=over 4
+
+=item * decimal_to_dms
+
+Convert a decimal representation of an angle to an anonymous array
+of [ DEGREES, MINUTES, SECONDS ].
+
+page 21
+
+=cut
+
+sub decimal_to_dms ( $decimal ) {
+	my( $d, $m, $s, $frac );
+	( $d, $frac ) = split /\./, $decimal;
+	( $m, $frac ) = split /\./, "0.$frac" * 60;
+	( $s )        = split /\./, "0.$frac" * 60;
+
+	[ $d, $m, $s ];
+	}
+
+=item * dms_to_decimal( DEGREES, MINUTES, SECONDS )
+
+Return the decimal representation.
+
+page 21
+
+=cut
+
+sub dms_to_decimal ( $d, $m, $s ) {
+	round6( $d + ( ( $m += $s / 60 ) / 60 ) )
+	}
 
 =back
 
