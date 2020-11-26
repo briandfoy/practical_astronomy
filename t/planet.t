@@ -119,10 +119,8 @@ subtest clone_with_now => sub {
 
 	my $with_now = $plain->clone_with_now;
 	test_cloned( $with_now );
-	my @date = $with_now->date;
-	diag( "Date is @date" );
 
-	my $with_date = $plain->clone_with_date( @date );
+	my $with_date = $plain->clone_with_date( $with_now->date );
 	test_cloned( $with_date );
 
 	foreach my $method ( @methods ) {
@@ -140,12 +138,14 @@ subtest Np => sub {
 	ok( defined $year, "Epoch has a year" );
 
 	# Only needs to be more recent than the epoch
-	my $future = $plain->clone_with_date( $year + 1, 1, 0 );
+	my $later = PracticalAstronomy::Date->new($year + 1, 1, 0);
+	my $future = $plain->clone_with_date( $later );
 	test_cloned( $future );
 	is( $future->Np, '53.715113', 'Np a year later' );
 
 	# Only needs to be less recent than the epoch
-	my $past = $plain->clone_with_date( $year - 1, 1, 0 );
+	my $earlier = PracticalAstronomy::Date->new($year - 1, 1, 0);
+	my $past = $plain->clone_with_date( $earlier );
 	test_cloned( $past );
 	is( $past->Np, '306.284887', 'Np a year ago' );
 	};
@@ -158,12 +158,12 @@ subtest jupiter_anomalies => sub {
 	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
-	my( $y, $m, $d ) = qw( 2003 11 22 );
-	my $planet = $plain->clone_with_date( $y, $m, $d );
+	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
+	my $planet = $plain->clone_with_date( $date );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
 
-	is( $planet->days_since_epoch, -2231, "-2231 days to $y-$m-$d" );
+	is( $planet->days_since_epoch, -2231, "-2231 days to " . $planet->date->yyyymmddhh );
 
 	is( sprintf( '%.6f', $planet->Np ), '174.555932', 'Np is correct' );
 
@@ -186,12 +186,12 @@ subtest earth_anomalies => sub {
 	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
-	my( $y, $m, $d ) = qw( 2003 11 22 );
-	my $planet = $plain->clone_with_date( $y, $m, $d );
+	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
+	my $planet = $plain->clone_with_date( $date );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
 
-	is( $planet->days_since_epoch, -2231, "-2231 days to $y-$m-$d" );
+	is( $planet->days_since_epoch, -2231, "-2231 days to " . $planet->date->yyyymmddhh );
 
 	is( $planet->Np, '321.011952', 'Np is correct' );
 
@@ -211,12 +211,12 @@ subtest mercury_anomalies => sub {
 	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
-	my( $y, $m, $d ) = qw( 2003 11 22 );
-	my $planet = $plain->clone_with_date( $y, $m, $d );
+	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
+	my $planet = $plain->clone_with_date( $date );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
 
-	is( $planet->days_since_epoch, -2231, "-2231 days to $y-$m-$d" );
+	is( $planet->days_since_epoch, -2231, "-2231 days to " . $planet->date->yyyymmddhh );
 
 	# is( $planet->Np, '321.011952', 'Np is correct' );
 
@@ -241,8 +241,8 @@ subtest eccentric_anomaly => sub {
 	test_plain( $plain );
 	is( $plain->name, $name, 'Correct planet name' );
 
-	my( $y, $m, $d ) = qw( 2003 11 22 );
-	my $planet = $plain->clone_with_date( $y, $m, $d );
+	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
+	my $planet = $plain->clone_with_date( $date );
 	isa_ok( $planet, $class );
 	can_ok( $planet, @methods );
 
@@ -257,15 +257,15 @@ subtest eccentric_anomaly => sub {
 
 # page 136
 subtest distance_to_jupiter => sub {
-	my( $y, $m, $d ) = qw( 2003 11 22 );
+	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
 
-	my $earth = $planets->data_for( 'Earth' )->clone_with_date( $y, $m, $d );
+	my $earth = $planets->data_for( 'Earth' )->clone_with_date( $date );
 	isa_ok( $earth, $class );
 	can_ok( $earth, qw(radius heliocentric_longitude) );
 	is( $earth->radius, '0.987847', 'Radius to Earth' );
 	is( $earth->heliocentric_longitude, '59.274748', 'Heliocentric longitude for Earth' );
 
-	my $jupiter = $planets->data_for( 'Jupiter' )->clone_with_date( $y, $m, $d );
+	my $jupiter = $planets->data_for( 'Jupiter' )->clone_with_date( $date );
 	isa_ok( $jupiter, $class );
 	can_ok( $jupiter, qw(radius heliocentric_longitude heliocentric_latitude) );
 	is( $jupiter->radius, '5.397121', 'Radius to Jupiter' );

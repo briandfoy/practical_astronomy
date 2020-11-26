@@ -61,16 +61,16 @@ Copy the object and add an observation date.
 =cut
 
 use Storable qw(dclone);
-sub clone_with_date ( $self, $y, $m, $d, $h = 0 ) {
+sub clone_with_date ( $self, $date ) {
 	my $hash = dclone $self;
 
 	bless $hash, ref $self;
 	delete $hash->{calc_date};
 	delete $hash->{computed};
 
-	$hash->set_date( $y, $m, $d, $h );
+	$hash->set_date( $date );
 
-	$hash->{calc_date}{elapsed} = $hash->epoch->elapsed_to( $y, $m, $d, $h );
+	$hash->{calc_date}{elapsed} = $hash->epoch->elapsed_to( $date );
 
 	$hash;
 	}
@@ -82,11 +82,7 @@ Like C<clone_with_date>, but uses the current time.
 =cut
 
 sub clone_with_now ( $self ) {
-	my( $y, $m, $d, $h ) = (gmtime)[5,4,3,2];
-	$y += 1900;
-	$m += 1;
-
-	$self->clone_with_date( $y, $m, $d, $h );
+	$self->clone_with_date( PracticalAstronomy::Date->new_from_now );
 	}
 
 =item * set_date( YEAR, MONTH, DATE [, HOUR24] )
@@ -103,22 +99,17 @@ Return the list of the year, month, date, and hour.
 
 =cut
 
-sub set_date ( $self, $y, $m, $d, $h = 0 ) {
-	$self->{calc_date}{year}  = $y;
-	$self->{calc_date}{month} = $m;
-	$self->{calc_date}{date}  = $d;
-	$self->{calc_date}{hour}  = $h;
+sub set_date ( $self, $date ) {
+	$self->{calc_date}{object}  = $date;
 
-	$self->{calc_date}{elapsed} = $self->epoch->elapsed_to( $y, $m, $d, $h );
+	$self->{calc_date}{elapsed} = $self->epoch->elapsed_to( $date );
 	}
 
 sub date_is_set ( $self ) {
-	return exists $self->{calc_date}{year}
+	return exists $self->{calc_date}{object}
 	}
 
-sub date ( $self ) {
-	map { $self->{calc_date}{$_} } qw(year month date hour);
-	}
+sub date ( $self ) { $self->{calc_date}{object} }
 
 =item * days_since_epoch()
 

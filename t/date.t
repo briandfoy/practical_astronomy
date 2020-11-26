@@ -77,16 +77,18 @@ subtest elapsed_days_1990 => sub {
 	my $start = $class->new( 1990, 1, 0 );
 	isa_ok( $start, $class );
 	can_ok( $start, 'julian', 'elapsed_to' );
-	is( $start->julian, "2447891.5", "(object) Jan 0, 1990 at midnight is 2447891.5" );
-	is( $start->modified_julian, "47891", "(object) Jan 0, 1990 at midnight is 47891 (modified julian)" );
-	is( $start->elapsed_to( 1985, 2, 17 ), -1778, "(object) -1778 days between the 1990-01-00 and 1985-02-17" );
 
 	my $end = $class->new( 1985, 2, 17 );
 	isa_ok( $end, $class );
 	can_ok( $end, 'julian' );
+
+	is( $start->julian, "2447891.5", "(object) Jan 0, 1990 at midnight is 2447891.5" );
+	is( $start->modified_julian, "47891", "(object) Jan 0, 1990 at midnight is 47891 (modified julian)" );
+	is( $start->elapsed_to( $end ), -1778, "(object) -1778 days between the 1990-01-00 and 1985-02-17" );
+
 	is( $end->julian, "2446113.5", "(object) Feb 17, 1985 at midnight is 2446113.5" );
 	is( $end->modified_julian, "46113", "(object) Feb 17, 1985 at midnight is 46113 (modified julian)" );
-	is( $end->elapsed_to( 1990, 1, 0 ), 1778, "(object) 1778 days between 1985-02-17 and 1990-01-00" );
+	is( $end->elapsed_to( $start ), 1778, "(object) 1778 days between 1985-02-17 and 1990-01-00" );
 	};
 
 subtest elapsed_days_2010 => sub {

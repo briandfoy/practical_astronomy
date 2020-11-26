@@ -157,9 +157,17 @@ sub month { $_[0]->{'month'} }
 sub day   { $_[0]->{'day'} }
 sub hour  { $_[0]->{'hour'} }
 
+=item * yyyymmddhh
+
+Format the date as a single string.
+
+=cut
+
+sub yyyymmddhh { sprintf '%4d%02d%02d%02d', map { $_[0]->$_() } qw(year month day hour) }
+
 =item * julian
 
-Returns the Julian date
+Returns the Julian date.
 
 =cut
 
@@ -184,9 +192,7 @@ Returns the number of julian days between the two dates.
 
 =cut
 
-sub elapsed_to ( $self, $y, $m, $d, $h = 0 ) {
-	(ref $self)->new( $y, $m, $d, $h )->julian - $self->julian;
-	}
+sub elapsed_to ( $self, $date ) { $date->julian - $self->julian }
 
 =back
 
