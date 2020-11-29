@@ -154,6 +154,24 @@ sub distance_to ( $self, $planet ) {
 	round( sqrt( $ρ2 ), 3 );
 	}
 
+BEGIN {
+my %positions = map { state $n = 0; $n++; lc($_) => $n, $n => $_ } qw(
+	Mercury Venus
+	Earth
+	Jupiter Saturn Uranus Neptune Pluto
+	);
+
+sub position ( $self ) { $positions{ lc $self->name } }
+
+sub is_outer_to ( $self, $planet ) {
+	return $self->position > $planet->position;
+	}
+
+sub is_inner_to ( $self, $planet ) {
+	return $self->position < $planet->position;
+	}
+}
+
 =back
 
 =head2 Planet things
