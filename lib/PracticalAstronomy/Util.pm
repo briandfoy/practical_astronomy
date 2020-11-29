@@ -6,7 +6,7 @@ package PracticalAstronomy::Util;
 
 use experimental qw(signatures);
 
-use Carp     qw(croak);
+use Carp     qw(carp croak);
 use Exporter qw(import);
 
 our @EXPORT = qw(
@@ -18,6 +18,8 @@ our @EXPORT = qw(
 	shift_into_360
 	ecliptic_obliquity
 	decimal_to_dms dms_to_decimal
+	right_ascension declination sky_position
+	geocentric_ecliptic_longitude geocentric_ecliptic_latitude
 	);
 
 =encoding utf8
@@ -112,7 +114,17 @@ sub tan_d    ( $d ) {  tan( deg2rad($d) ) }
 
 sub arccos_d ( $x ) { rad2deg( acos($x) ) }
 sub arcsin_d ( $x ) { rad2deg( asin($x) ) }
-sub arctan_d ( $x ) { rad2deg( atan($x) ) }
+sub arctan_d ( $y, $x = 1 ) {
+	my $ap = rad2deg( atan( $y / $x ) );
+
+	# put it in the right quadrant
+	# page 47
+	$ap + do {
+		if( $x < 0 )               { 180 }
+		elsif( $x > 0 and $y < 0 ) { 360 }
+		else                       {   0 }
+		};
+	}
 
 =back
 
@@ -204,6 +216,122 @@ sub ecliptic_obliquity ( $date ) {
 	$DE /= 3600;
 
 	my $ε = round( 23.439292 - $DE, 8 );
+	}
+
+=item * sky_position
+
+=cut
+
+sub sky_position ( $origin, $target ) {
+	my $ε = ecliptic_obliquity( $origin->date );
+
+	my $λ = &geocentric_ecliptic_longitude;
+	my $β = &geocentric_ecliptic_latitude;
+
+	(
+		right_ascension( $ε, $λ, $β ),
+		declination( $ε, $λ, $β )
+	)
+	}
+
+=item * right_ascension
+
+=cut
+
+sub right_ascension ( $ε, $λ, $β ) {
+	my $y = sin_d($λ) * cos_d($ε) - tan_d($β) * sin_d($ε);
+	my $x = cos_d( $λ );
+	my $a = arctan_d( $y, $x );
+
+	$a /= 15;
+
+	round6($a)
+	}
+
+=item * declination
+
+=cut
+
+sub declination ( $ε, $λ, $β ) {
+	round6(
+		arcsin_d(
+			sin_d($β) * cos_d($ε) + cos_d($β) * sin_d($ε) * sin_d($λ)
+			)
+		)
+	}
+
+=item * geocentric_ecliptic_longitude( ORIGIN, TARGET ), λ
+
+=cut
+
+sub geocentric_ecliptic_longitude ( $origin, $target ) {
+	my( $R1, $L1, $R2, $L2, $offset ) = do {
+		if( $target->is_outer_to( $origin ) ) {
+			 (
+			 $origin->radius,
+			 $origin->heliocentric_longitude,
+			 $target->radius_projected,
+			 $target->heliocentric_longitude_projected,
+			 0
+			 )
+			}
+		elsif( $target->is_inner_to( $origin ) ) {
+			 (
+			 $target->radius_projected,
+			 $target->heliocentric_longitude_projected,
+			 $origin->radius,
+			 $origin->heliocentric_longitude,
+			 180
+			 )
+			}
+		else {
+			carp "Both planets are the same!";
+			}
+		};
+
+
+	my $long_diff = $L2 - $L1;
+	my $y = $R1 * sin_d( $long_diff );
+	my $x = $R2 - $R1 * cos_d( $long_diff );
+	say STDERR <<~"HERE";
+	long diff: $long_diff
+	R1: $R1
+	L1: $L1
+	R2: $R2
+	L2: $L2
+	offset: $offset
+	x: $x
+	y: $y
+	HERE
+	my $λ = shift_into_360( arctan_d( $y, $x ) + $L2 + $offset );
+say STDERR "pre λ: $λ";
+
+	round6( shift_into_360( $λ ) );
+	}
+
+=item * geocentric_ecliptic_latitude( ORIGIN, TARGET ), β
+
+=cut
+
+sub geocentric_ecliptic_latitude ( $origin, $target ) {
+	my $λ = geocentric_ecliptic_longitude( $origin, $target );
+
+	my $y = (
+			$target->radius_projected
+			* tan_d( $target->heliocentric_latitude )
+			* sin_d( $λ - $target->heliocentric_longitude_projected )
+			);
+
+	my $x = (
+			$origin->radius
+				*
+			sin_d(
+				$target->heliocentric_longitude_projected
+				- $origin->heliocentric_longitude
+				)
+			);
+
+	round6( arctan_d( $y, $x ) );
 	}
 
 =cut
