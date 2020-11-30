@@ -293,20 +293,9 @@ sub geocentric_ecliptic_longitude ( $origin, $target ) {
 	my $long_diff = $L2 - $L1;
 	my $y = $R1 * sin_d( $long_diff );
 	my $x = $R2 - $R1 * cos_d( $long_diff );
-	say STDERR <<~"HERE";
-	long diff: $long_diff
-	R1: $R1
-	L1: $L1
-	R2: $R2
-	L2: $L2
-	offset: $offset
-	x: $x
-	y: $y
-	HERE
 	my $λ = shift_into_360( arctan_d( $y, $x ) + $L2 + $offset );
-say STDERR "pre λ: $λ";
 
-	round6( shift_into_360( $λ ) );
+	round6( $λ );
 	}
 
 =item * geocentric_ecliptic_latitude( ORIGIN, TARGET ), β
