@@ -161,11 +161,28 @@ my %positions = map { state $n = 0; $n++; lc($_) => $n, $n => $_ } qw(
 	Jupiter Saturn Uranus Neptune Pluto
 	);
 
+=item * position
+
+Returns the index of the position in the list of planets (so, Earth
+is 3).
+
+=cut
+
+
 sub position ( $self ) { $positions{ lc $self->name } }
+
+=item * is_outer_to( PLANET )
+
+=item * is_inner_to( PLANET )
+
+Returns true if the orbit is outside the orbit of PLANET.
+
+=cut
 
 sub is_outer_to ( $self, $planet ) {
 	return $self->position > $planet->position;
 	}
+
 
 sub is_inner_to ( $self, $planet ) {
 	return $self->position < $planet->position;
@@ -344,7 +361,7 @@ sub eccentric_anomaly ( $self, $precision = 1.e-6 ) {
 	return;
 	}
 
-=item * radius
+=item * radius, r
 
 Returns the radius vector magnitude, r, in AU
 
@@ -362,9 +379,9 @@ sub radius ( $self ) {
 		);
 	}
 
-=item * heliocentric_longitude
+=item * heliocentric_longitude, l
 
-Returns the heliocentric longitude, l
+Returns the heliocentric longitude, l, in degrees
 
 =cut
 
@@ -378,9 +395,9 @@ sub heliocentric_longitude ( $self ) {
 		);
 	}
 
-=item * heliocentric_latitude
+=item * heliocentric_latitude, ψ
 
-Returns the heliocentric latitude, ψ
+Returns the heliocentric latitude, ψ, in degrees
 
 =cut
 
@@ -397,9 +414,10 @@ sub heliocentric_latitude ( $self ) {
 		);
 	}
 
-=item * heliocentric_longitude_projected
+=item * heliocentric_longitude_projected, l'
 
-Returns the heliocentric longitude projected onto the ecliptic, l'
+Returns the heliocentric longitude projected onto the ecliptic, l',
+in degrees.
 
 =cut
 
@@ -408,11 +426,14 @@ sub heliocentric_longitude_projected ( $self ) {
 		carp "Date not set for planet observation. Use clone_with_date() first";
 		return;
 		}
+
+	my $y = sin_d( $self->heliocentric_longitude - $self->long_of_ascending_node ) * cos_d( $self->orbital_inclination );
+	my $x = cos_d( $self->heliocentric_longitude - $self->long_of_ascending_node );
+
 	round(
-		arctan_d(
-			tan_d( $self->heliocentric_longitude - $self->long_of_ascending_node ) * cos_d( $self->orbital_inclination)
+		shift_into_360(
+			arctan_d( $y, $x ) + $self->long_of_ascending_node
 			)
-		+ $self->long_of_ascending_node
 		);
 	}
 
