@@ -1,0 +1,63 @@
+#!perl
+use v5.20;
+use experimental qw(signatures);
+
+use File::FindLib qw(lib);
+
+use PracticalAstronomy::Date;
+use PracticalAstronomy::PlanetsData;
+use PracticalAstronomy::Util;
+
+my( $year, $month, $day ) = @ARGV[0..2];
+my $date = PracticalAstronomy::Date->new( $year, $month, $day );
+
+my $file = pick_data_file( $year );
+say "Data file: $file";
+say "Date: ", join '/', map { $date->$_() } qw(year month day);
+my $planets = PracticalAstronomy::PlanetsData->new_from_file( $file );
+
+my $epoch = PracticalAstronomy::Date->new( split /-/, $planets->{meta}{epoch} );
+say "Epoch: ", $epoch->yyyymmddhh;
+say "Elapsed: ", $epoch->elapsed_to( $date );
+
+printf "%-7s %15s %10s %10s %10s %10s %10s %10s %10s %10s\n",
+	(
+	'Name',
+	'R, km',
+	'R, AU',
+	q(r'),
+	'Tp',
+	'Np',
+	'ν',
+	'Long, l',
+	q(l'),
+	'Lat, ψ'
+	);
+
+foreach my $name ( $planets->names ) {
+	my $planet  = $planets->data_for( $name )->clone_with_date( $date );
+
+	my $radius_m = round4( $planet->radius * AU() / 1000 );
+
+	printf "%-7s %15.0f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n",
+		$planet->name, $radius_m,
+		map { $planet->$_() }
+		qw(
+			radius radius_projected
+			orbital_period Np
+			true_anomaly
+			heliocentric_longitude heliocentric_longitude_projected
+			heliocentric_latitude
+			);
+	}
+
+sub pick_data_file ( $year ) {
+	my( $file ) =
+		map  { $_->[0] }
+		reverse
+		sort { $a->[2] <=> $b->[2] }
+		map  { [ $_, /(\d+)\.json\z/, $year - $1 ] }
+		glob 'data/*.json';
+
+	return $file;
+	}
