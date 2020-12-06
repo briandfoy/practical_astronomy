@@ -20,6 +20,7 @@ our @EXPORT = qw(
 	decimal_to_dms dms_to_decimal
 	right_ascension declination sky_position
 	geocentric_ecliptic_longitude geocentric_ecliptic_latitude
+	pick_data_file
 	);
 
 =encoding utf8
@@ -33,6 +34,28 @@ PracticalAstronomy::Util
 	use PracticalAstronomy::Util;
 
 =head1 DESCRIPTION
+
+=head2
+
+=over 4
+
+=item * pick_data_file( YEAR )
+
+Find the osculating element data file closest to YEAR.
+
+=cut
+
+sub pick_data_file ( $year ) {
+	my @files =
+		map  { $_->[0] }
+		sort { $a->[2] <=> $b->[2] }
+		map  { [ $_, /(\d+)\.json\z/, abs($year - $1) ] }
+		glob 'data/*.json';
+
+	say "File order: @files";
+
+	return $files[0];
+	}
 
 =head2 Basic math things
 
