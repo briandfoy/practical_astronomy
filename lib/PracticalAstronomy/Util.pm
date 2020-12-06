@@ -50,9 +50,7 @@ sub pick_data_file ( $year ) {
 		map  { $_->[0] }
 		sort { $a->[2] <=> $b->[2] }
 		map  { [ $_, /(\d+)\.json\z/, abs($year - $1) ] }
-		glob 'data/*.json';
-
-	say "File order: @files";
+		glob 'data/planet*.json';
 
 	return $files[0];
 	}

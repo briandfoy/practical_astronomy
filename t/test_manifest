@@ -1,5 +1,6 @@
 t/mojo_roles.t
 t/util.t
+t/pick_data_file.t
 t/basic_math.t
 t/trig.t
 t/julian.t
