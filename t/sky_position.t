@@ -7,6 +7,7 @@ use Test::More 1;
 
 use PracticalAstronomy::Date;
 use PracticalAstronomy::PlanetsData;
+use PracticalAstronomy::Util;
 
 my $class;
 BEGIN {
@@ -122,6 +123,13 @@ subtest jupiter_20031122 => sub {
 
 	# book says 6 21 25
 	is_deeply( decimal_to_dms($δ), [qw( 6 21 24)], "Jupiter's declination is right" );
+
+	ok( defined &sky_position, 'sky_position is defined' );
+	my @sky_position = sky_position( $earth, $jupiter );
+	is( scalar @sky_position, 2, 'sky_position returns two items' );
+
+	is( $sky_position[0], $α, 'sky_position returns correct right ascention' );
+	is( $sky_position[1], $δ, 'sky_position returns correct declination' );
 	};
 
 done_testing();
