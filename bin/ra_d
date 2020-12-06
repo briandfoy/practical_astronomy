@@ -1,0 +1,55 @@
+#!/Users/brian/bin/perls/perl
+use v5.26;
+use utf8;
+use open qw(:std :utf8);
+
+use strict;
+use experimental qw(signatures);
+
+use File::FindLib qw(lib);
+
+use PracticalAstronomy::PlanetsData;
+use PracticalAstronomy::Util;
+
+my $file = 'data/planetary_data_2010.json';
+my $planets = PracticalAstronomy::PlanetsData->new_from_file( $file );
+
+my $date     = PracticalAstronomy::Date->new( 2003, 11, 22 );
+my $earth    = $planets->data_for( 'earth' )->clone_with_date( $date );
+
+{
+# page 52 - expected value is 23 26 17
+my $date = PracticalAstronomy::Date->new( 2009, 7, 6 );
+my $ε = ecliptic_obliquity( $date );
+say "ε (2009, 7, 6): ", $ε;
+say "ε: ", join '-', decimal_to_dms($ε)->@*;
+}
+
+foreach my $name ( qw(Jupiter Mercury) ) {
+	my $planet  = $planets->data_for( $name )->clone_with_date( $earth->date );
+	say '-' x 50;
+	say "Earth & ", $planet->name, " ",
+		$earth->date->yyyymmddhh, " ", $planet->date->yyyymmddhh;
+
+	say "elapsed: ", $planet->days_since_epoch;
+	say "l: ", $planet->heliocentric_longitude;
+	say "v: ", $planet->true_anomaly;
+	say "w: ", $planet->long_at_perihelion;
+	say "r: ", $planet->radius;
+	say "r': ", $planet->radius_projected;
+	say "ψ: ", $planet->heliocentric_latitude;
+	say "l': ", $planet->heliocentric_longitude_projected;
+	say "􏰗Ω: ", $planet->long_of_ascending_node;
+
+	say "vE: ", $earth->true_anomaly;
+	say "R: ", $earth->radius;
+
+	my( $ra, $d ) = sky_position( $earth, $planet );
+
+	say "α: $ra\nδ: $d";
+
+	printf "α: %s\nδ: %s\n",
+		map { sprintf '%d %d %d', decimal_to_dms( $_ )->@* }
+		( $ra, $d );
+	}
+
