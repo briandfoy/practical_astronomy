@@ -255,6 +255,23 @@ subtest eccentric_anomaly => sub {
 	is( $E, '47.637347', 'eccentric_anomaly for Mars' );
 	};
 
+subtest relative_position => sub {
+	my( $inner_name, $outer_name ) = qw(Venus Neptune);
+	my $inner = $planets->data_for( $inner_name );
+	my $outer = $planets->data_for( $outer_name );
+
+	foreach my $p ( $inner, $outer ) {
+		can_ok( $p, qw(is_inner_to is_outer_to position) );
+		}
+
+	cmp_ok( $inner->position, '<', $outer->position );
+	ok(   $inner->is_inner_to( $outer ), "$inner_name is inner to $outer_name" );
+	ok( ! $inner->is_outer_to( $outer ), "$inner_name is not outer to $outer_name" );
+
+	ok( ! $outer->is_inner_to( $inner ), "$outer_name is not inner to $inner_name" );
+	ok(   $outer->is_outer_to( $inner ), "$outer_name is outer to $inner_name" );
+	};
+
 # page 136
 subtest distance_to_jupiter => sub {
 	my $date = PracticalAstronomy::Date->new( 2003, 11, 22 );
