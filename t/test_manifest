@@ -5,3 +5,5 @@ t/trig.t
 t/julian.t
 t/planets_data.t
 t/planet.t
+t/mercury_1990.t
+t/jupiter_1990.t
