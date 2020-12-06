@@ -262,7 +262,6 @@ sub visual_magnitude_1au   { $_[0]->{ $K->_visual_magnitude_key         } }
 sub epoch                  { $_[0]->{ $K->_epoch_key                    } }
 sub symbol                 { $_[0]->{ $K->_symbol_key                   } }
 
-
 =item * Np
 
 Returns the progress along the orbit.
@@ -276,8 +275,9 @@ sub Np ( $self ) {
 		}
 
 	my $Np = ( 360 / days_in_year ) * ( $self->days_since_epoch / $self->orbital_period );
+
 	while(1) { last if $Np >=   0; $Np += 360 }
-	while(1) { last if $Np <= 360; $Np -= 360 }
+	while(1) { last if $Np < 360; $Np -= 360 }
 
 	round6( shift_into_360( $Np ) );
 	}
